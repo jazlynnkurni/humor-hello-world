@@ -4,7 +4,7 @@ import { supabase, supabaseConfigured, type Joke } from "@/lib/supabase";
 // Always fetch fresh rows on each request.
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Jokes" };
+export const metadata = { title: "Columbia Jokes" };
 
 export default async function JokesPage() {
   if (!supabaseConfigured) {
@@ -20,7 +20,7 @@ export default async function JokesPage() {
 
   const { data, error } = await supabase
     .from("jokes")
-    .select("id, setup, punchline, rating, created_at")
+    .select("id, setup, punchline, rating, source_url, created_at")
     .order("rating", { ascending: false });
 
   if (error) {
@@ -37,7 +37,7 @@ export default async function JokesPage() {
     <Shell>
       <p className="mb-8 text-sm text-neutral-400">
         {jokes.length} joke{jokes.length === 1 ? "" : "s"} loaded from
-        Supabase, sorted by rating.
+        Supabase, sorted by rating. Written from real r/columbia threads.
       </p>
       <ol className="flex flex-col gap-4">
         {jokes.map((joke, i) => (
@@ -54,6 +54,16 @@ export default async function JokesPage() {
             </div>
             <p className="text-lg font-medium">{joke.setup}</p>
             <p className="mt-2 text-neutral-300">{joke.punchline}</p>
+            {joke.source_url && (
+              <a
+                href={joke.source_url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-block text-xs text-neutral-500 underline-offset-2 hover:text-neutral-300 hover:underline"
+              >
+                source thread ↗
+              </a>
+            )}
           </li>
         ))}
       </ol>
@@ -67,7 +77,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       <Link href="/" className="text-sm text-neutral-500 hover:text-neutral-300">
         ← Home
       </Link>
-      <h1 className="mb-2 mt-4 text-4xl font-semibold tracking-tight">Jokes</h1>
+      <h1 className="mb-2 mt-4 text-4xl font-semibold tracking-tight">Columbia Jokes</h1>
       {children}
     </main>
   );

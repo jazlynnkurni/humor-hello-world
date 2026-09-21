@@ -20,5 +20,6 @@ export type Joke = {
   setup: string;
   punchline: string;
   rating: number;
+  source_url: string | null;
   created_at: string;
 };
