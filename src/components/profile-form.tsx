@@ -12,6 +12,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   const [last, setLast] = useState(profile.last_name ?? "");
   const [joke, setJoke] = useState(profile.favorite_joke ?? "");
   const [avatar, setAvatar] = useState(profile.avatar_url);
+  const [pick, setPick] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -27,9 +28,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
       // The image goes to Supabase Storage. Only its URL is stored in the table.
       const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
       const path = `${profile.id}/avatar-${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("avatars")
-        .upload(path, file, { upsert: true, contentType: file.type });
+      const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
       if (upErr) {
         setStatus(`Upload failed: ${upErr.message}`);
         setBusy(false);
@@ -52,6 +51,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
     if (error) setStatus(`Save failed: ${error.message}`);
     else {
       setAvatar(avatar_url);
+      setPick(null);
       if (fileRef.current) fileRef.current.value = "";
       setStatus("Saved.");
       router.refresh();
@@ -59,47 +59,63 @@ export function ProfileForm({ profile }: { profile: Profile }) {
     setBusy(false);
   }
 
+  const shown = pick ?? avatar;
+  const initial = (first[0] ?? profile.email?.[0] ?? "?").toUpperCase();
+
   return (
-    <form onSubmit={save} className="mt-8 flex flex-col gap-5">
-      <div className="flex items-center gap-4">
-        {avatar ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={avatar} alt="" className="h-20 w-20 rounded-full object-cover" />
-        ) : (
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-neutral-800 text-2xl">
-            {(first[0] ?? profile.email?.[0] ?? "?").toUpperCase()}
-          </div>
-        )}
-        <label className="flex flex-col gap-1.5 text-sm">
-          <span className="text-neutral-400">Photo</span>
-          <input ref={fileRef} type="file" accept="image/*" className="text-sm text-neutral-300" />
+    <form onSubmit={save} className="grid gap-8 md:grid-cols-[1fr_1fr] md:gap-12">
+      <div className="flex flex-col gap-5">
+        <label className="field">
+          <span>First name</span>
+          <input value={first} onChange={(e) => setFirst(e.target.value)} className="input" />
         </label>
+        <label className="field">
+          <span>Last name</span>
+          <input value={last} onChange={(e) => setLast(e.target.value)} className="input" />
+        </label>
+        <label className="field">
+          <span>Favorite Columbia joke</span>
+          <textarea value={joke} onChange={(e) => setJoke(e.target.value)} className="input" rows={3} />
+        </label>
+        <div className="mt-2 flex items-center gap-4">
+          <button disabled={busy} className="btn btn-ink">
+            {busy ? "Saving…" : "Save changes"}
+          </button>
+          {status && <p className="t-sm text-[color:var(--ink-60)]">{status}</p>}
+        </div>
       </div>
-      <Input label="First name" value={first} onChange={setFirst} />
-      <Input label="Last name" value={last} onChange={setLast} />
-      <Input label="Favorite Columbia joke" value={joke} onChange={setJoke} />
-      <div className="flex items-center gap-4">
-        <button
-          disabled={busy}
-          className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black hover:bg-neutral-200 disabled:opacity-60"
-        >
-          {busy ? "Saving…" : "Save changes"}
-        </button>
-        {status && <p className="text-sm text-neutral-400">{status}</p>}
+
+      {/* the portrait, printed as a riso disc */}
+      <div className="card enter flex flex-col items-center gap-6 self-start p-8" style={{ "--i": 2 } as React.CSSProperties}>
+        <div className="relative h-40 w-40" style={{ isolation: "isolate" }}>
+          <span className="absolute left-0 top-2 h-36 w-36 rounded-full bg-sage" style={{ mixBlendMode: "multiply" }} />
+          <span className="absolute right-0 top-2 h-36 w-36 rounded-full bg-mauve" style={{ mixBlendMode: "multiply" }} />
+          <span className="absolute left-1/2 top-1/2 flex h-28 w-28 -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-hidden rounded-full bg-paper shadow-[var(--shadow-card)]">
+            {shown ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={shown} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <span className="font-jak text-[39px] font-semibold">{initial}</span>
+            )}
+          </span>
+        </div>
+        <label className="btn btn-paper cursor-pointer">
+          {shown ? "Change photo" : "Add a photo"}
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              setPick(f ? URL.createObjectURL(f) : null);
+            }}
+          />
+        </label>
+        <p className="t-sm text-center text-[color:var(--ink-60)]">
+          Stored in Supabase Storage. Only the link lives in the table.
+        </p>
       </div>
     </form>
-  );
-}
-
-function Input({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  return (
-    <label className="flex flex-col gap-1.5 text-sm">
-      <span className="text-neutral-400">{label}</span>
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-base outline-none focus:border-neutral-500"
-      />
-    </label>
   );
 }

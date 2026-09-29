@@ -1,84 +1,77 @@
 import Link from "next/link";
-import { supabase, supabaseConfigured, type Joke } from "@/lib/supabase";
+import { JokeCard } from "@/components/joke-card";
+import { fetchJokes, type JokeFilter } from "@/lib/jokes";
+import { getUserAndProfile } from "@/lib/profile";
 
-// Always fetch fresh rows on each request.
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Jokes" };
 
-export const metadata = { title: "Columbia Jokes" };
+const FILTERS: { key: JokeFilter; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "record", label: "The record" },
+  { key: "members", label: "Members" },
+];
 
-export default async function JokesPage() {
-  if (!supabaseConfigured) {
-    return (
-      <Shell>
-        <p className="text-red-400">
-          Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and
-          NEXT_PUBLIC_SUPABASE_ANON_KEY.
-        </p>
-      </Shell>
-    );
-  }
-
-  const { data, error } = await supabase
-    .from("jokes")
-    .select("id, setup, punchline, rating, source_url, created_at")
-    .order("rating", { ascending: false });
-
-  if (error) {
-    return (
-      <Shell>
-        <p className="text-red-400">Could not load jokes: {error.message}</p>
-      </Shell>
-    );
-  }
-
-  const jokes = (data ?? []) as Joke[];
+export default async function JokesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ filter?: string; new?: string }>;
+}) {
+  const sp = await searchParams;
+  const filter = (FILTERS.some((f) => f.key === sp.filter) ? sp.filter : "all") as JokeFilter;
+  const highlight = sp.new ? Number(sp.new) : null;
+  const [{ user }, jokes] = await Promise.all([getUserAndProfile(), fetchJokes(filter)]);
 
   return (
-    <Shell>
-      <p className="mb-8 text-sm text-neutral-400">
-        {jokes.length} joke{jokes.length === 1 ? "" : "s"} loaded from
-        Supabase, sorted by rating. Written from real r/columbia threads.
-      </p>
-      <ol className="flex flex-col gap-4">
-        {jokes.map((joke, i) => (
-          <li
-            key={joke.id}
-            className="rounded-xl border border-neutral-800 bg-neutral-900/60 p-5"
-          >
-            <div className="mb-2 flex items-center justify-between text-xs text-neutral-500">
-              <span>#{i + 1}</span>
-              <span aria-label={`${joke.rating} out of 5`}>
-                {"★".repeat(joke.rating)}
-                {"☆".repeat(Math.max(0, 5 - joke.rating))}
-              </span>
-            </div>
-            <p className="text-lg font-medium">{joke.setup}</p>
-            <p className="mt-2 text-neutral-300">{joke.punchline}</p>
-            {joke.source_url && (
-              <a
-                href={joke.source_url}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-3 inline-block text-xs text-neutral-500 underline-offset-2 hover:text-neutral-300 hover:underline"
-              >
-                source thread ↗
-              </a>
-            )}
-          </li>
-        ))}
-      </ol>
-    </Shell>
-  );
-}
+    <main className="mx-auto max-w-7xl px-6 pb-8 pt-32 md:px-16">
+      <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-[560px]">
+          <p className="eyebrow">The list</p>
+          <h1 className="t-h1 mt-3">Columbia Jokes</h1>
+          <p className="t-lg mt-4 text-[color:var(--ink-60)]">
+            {jokes.length} print{jokes.length === 1 ? "" : "s"}. Tap a setup for its punchline.
+            {user ? " Laugh at the ones that land." : " Sign in to laugh at the ones that land."}
+          </p>
+        </div>
+        <nav className="pill flex h-12 max-w-full items-center gap-1 self-start overflow-x-auto px-2 font-jak text-[14px] font-medium" aria-label="Filter">
+          {FILTERS.map((f) => (
+            <Link
+              key={f.key}
+              href={f.key === "all" ? "/jokes" : `/jokes?filter=${f.key}`}
+              aria-current={filter === f.key ? "page" : undefined}
+              className={`flex h-10 items-center whitespace-nowrap rounded-full px-4 transition-colors ${
+                filter === f.key ? "bg-ink text-paper" : "text-[color:var(--ink-60)] hover:text-oxblood"
+              }`}
+            >
+              {f.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
 
-function Shell({ children }: { children: React.ReactNode }) {
-  return (
-    <main className="mx-auto min-h-screen max-w-2xl px-6 py-16">
-      <Link href="/" className="text-sm text-neutral-500 hover:text-neutral-300">
-        ← Home
-      </Link>
-      <h1 className="mb-2 mt-4 text-4xl font-semibold tracking-tight">Columbia Jokes</h1>
-      {children}
+      {jokes.length === 0 ? (
+        <div className="card mt-12 flex flex-col items-start gap-4 p-8">
+          <h2 className="t-h3">Nothing printed here yet.</h2>
+          <p className="text-[color:var(--ink-60)]">Be the first member to put one on the press.</p>
+          <Link href={user ? "/write" : "/login"} className="btn btn-ink">
+            {user ? "Write one" : "Sign in to write one"}
+          </Link>
+        </div>
+      ) : (
+        <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {jokes.map((j, i) => (
+            <JokeCard key={j.id} joke={j} index={Math.min(i, 8)} canLaugh={Boolean(user)} highlight={highlight === j.id} />
+          ))}
+        </div>
+      )}
+
+      {user && (
+        <div className="mt-16 flex justify-center">
+          <Link href="/write" className="btn btn-ink">
+            Print your own
+          </Link>
+        </div>
+      )}
     </main>
   );
 }

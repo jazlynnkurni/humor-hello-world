@@ -1,26 +1,193 @@
 @import "tailwindcss";
 
+/* ---- the system, carried over from jazlynnwashere.com ------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #faf9f7;
+  --ink: #1c1a17;
+  --oxblood: #340414;
+  --gold: #a99939;
+  /* her eight riso swatches, the ones that do work here */
+  --sage: #9ba69c;
+  --mauve: #827a85;
+  --lilac: #c4c1c8;
+  --cream: #dfddc8;
+  --grey: #c7c7c7;
+  --stone: #c2beb3;
+
+  --ink-06: rgba(28, 26, 23, 0.06);
+  --ink-12: rgba(28, 26, 23, 0.12);
+  --ink-40: rgba(28, 26, 23, 0.4);
+  --ink-60: rgba(28, 26, 23, 0.6);
+
+  --font-jak: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-hel: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* concentric radii: outer 24, inner 16, chip 9999 */
+  --r-card: 24px;
+  --r-inner: 16px;
+
+  --shadow-card: 0 1px 2px rgba(28, 26, 23, 0.05), 0 12px 32px -16px rgba(28, 26, 23, 0.22);
+  --shadow-float: 0 1px 2px rgba(28, 26, 23, 0.06), 0 16px 48px -20px rgba(28, 26, 23, 0.3);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-oxblood: var(--oxblood);
+  --color-gold: var(--gold);
+  --color-sage: var(--sage);
+  --color-mauve: var(--mauve);
+  --color-lilac: var(--lilac);
+  --color-cream: var(--cream);
+  --color-grey: var(--grey);
+  --color-stone: var(--stone);
+  --font-jak: var(--font-jak);
+  --font-hel: var(--font-hel);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--paper);
 }
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-hel);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-jak);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+p { text-wrap: pretty; }
+
+/* type scale 1.25 at 16 */
+.t-display { font-size: clamp(39px, 5.2vw, 61px); line-height: 1.02; }
+.t-h1 { font-size: 39px; line-height: 1.1; }
+.t-h2 { font-size: 31px; line-height: 1.15; }
+.t-h3 { font-size: 25px; line-height: 1.25; }
+.t-lg { font-size: 20px; line-height: 1.4; }
+.t-sm { font-size: 14px; line-height: 1.45; }
+.eyebrow {
+  font-family: var(--font-jak);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-60);
+}
+
+/* ---- surfaces ------------------------------------------------------------ */
+.card {
+  background: #fff;
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  outline: 1px solid var(--ink-06);
+  outline-offset: -1px;
+}
+.pill {
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-radius: 9999px;
+  box-shadow: var(--shadow-float);
+  outline: 1px solid var(--ink-06);
+  outline-offset: -1px;
+}
+
+/* ---- controls ------------------------------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 9999px;
+  font-family: var(--font-jak);
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1;
+  white-space: nowrap;
+  transition: transform 160ms cubic-bezier(0.2, 0.7, 0.2, 1), background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+.btn:active { transform: scale(0.96); }
+.btn:disabled { opacity: 0.55; pointer-events: none; }
+.btn-ink { background: var(--ink); color: var(--paper); }
+.btn-ink:hover { background: var(--oxblood); }
+.btn-paper { background: #fff; color: var(--ink); box-shadow: var(--shadow-card); outline: 1px solid var(--ink-12); outline-offset: -1px; }
+.btn-paper:hover { color: var(--oxblood); }
+.btn-ghost { color: var(--ink-60); padding: 0 12px; }
+.btn-ghost:hover { color: var(--oxblood); }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.field > span {
+  font-family: var(--font-jak);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--ink-60);
+}
+.input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: var(--r-inner);
+  background: #fff;
+  color: var(--ink);
+  font: 300 16px/1.4 var(--font-hel);
+  outline: 1px solid var(--ink-12);
+  outline-offset: -1px;
+  transition: outline-color 160ms ease, box-shadow 160ms ease;
+}
+.input:focus { outline: 2px solid var(--ink); outline-offset: -2px; }
+.input::placeholder { color: var(--ink-40); }
+textarea.input { resize: vertical; min-height: 96px; }
+
+.link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--ink-12);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 160ms ease, color 160ms ease;
+}
+.link:hover { color: var(--oxblood); text-decoration-color: var(--oxblood); }
+
+/* riso misregistration: the second plate a hair off */
+.riso-ink {
+  color: var(--ink);
+  text-shadow: 1.5px 1px 0 rgba(52, 4, 20, 0.22);
+}
+
+/* the sheets canvas */
+canvas[data-grab="1"] { cursor: grab; }
+canvas[data-grab="1"]:active { cursor: grabbing; }
+
+/* ---- motion -------------------------------------------------------------- */
+@keyframes enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+.enter {
+  animation: enter 640ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+@keyframes stamp {
+  0% { box-shadow: 0 0 0 0 rgba(52, 4, 20, 0.35), var(--shadow-card); }
+  100% { box-shadow: 0 0 0 18px rgba(52, 4, 20, 0), var(--shadow-card); }
+}
+.stamped { animation: stamp 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) 1; }
+@media (prefers-reduced-motion: reduce) {
+  .enter, .stamped { animation: none; }
+  .btn, .input, .link { transition: none; }
 }
