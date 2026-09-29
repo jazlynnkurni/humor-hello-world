@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -20,5 +21,7 @@ export async function saveNames(formData: FormData) {
     .update({ first_name, last_name, favorite_joke, updated_at: new Date().toISOString() })
     .eq("id", user.id);
 
+  // The nav lives in the shared layout; make it re-render with the new name.
+  revalidatePath("/", "layout");
   redirect("/members");
 }
