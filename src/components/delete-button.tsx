@@ -12,7 +12,7 @@ export function DeleteButton({ id }: { id: number }) {
       onClick={() => {
         if (confirm("Pull this print? It disappears for everyone.")) start(() => deleteJoke(id));
       }}
-      className="btn btn-ghost h-9 min-h-0 text-[14px]"
+      className="eyebrow flex h-11 items-center text-ink-3 transition-colors hover:text-ink"
     >
       {pending ? "Pulling…" : "Pull it"}
     </button>

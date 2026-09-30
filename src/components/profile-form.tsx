@@ -63,8 +63,8 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   const initial = (first[0] ?? profile.email?.[0] ?? "?").toUpperCase();
 
   return (
-    <form onSubmit={save} className="grid gap-8 md:grid-cols-[1fr_1fr] md:gap-12">
-      <div className="flex flex-col gap-5">
+    <form onSubmit={save} className="grid gap-16 md:grid-cols-2">
+      <div className="flex flex-col gap-8">
         <label className="field">
           <span>First name</span>
           <input value={first} onChange={(e) => setFirst(e.target.value)} className="input" />
@@ -75,29 +75,25 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         </label>
         <label className="field">
           <span>Favorite Columbia joke</span>
-          <textarea value={joke} onChange={(e) => setJoke(e.target.value)} className="input" rows={3} />
+          <textarea value={joke} onChange={(e) => setJoke(e.target.value)} className="input" rows={2} />
         </label>
-        <div className="mt-2 flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <button disabled={busy} className="btn btn-ink">
             {busy ? "Saving…" : "Save changes"}
           </button>
-          {status && <p className="t-sm text-[color:var(--ink-60)]">{status}</p>}
+          {status && <p className="t-sm text-ink-2">{status}</p>}
         </div>
       </div>
 
-      {/* the portrait, printed as a riso disc */}
-      <div className="card enter flex flex-col items-center gap-6 self-start p-8" style={{ "--i": 2 } as React.CSSProperties}>
-        <div className="relative h-40 w-40" style={{ isolation: "isolate" }}>
-          <span className="absolute left-0 top-2 h-36 w-36 rounded-full bg-sage" style={{ mixBlendMode: "multiply" }} />
-          <span className="absolute right-0 top-2 h-36 w-36 rounded-full bg-mauve" style={{ mixBlendMode: "multiply" }} />
-          <span className="absolute left-1/2 top-1/2 flex h-28 w-28 -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-hidden rounded-full bg-paper shadow-[var(--shadow-card)]">
-            {shown ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={shown} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <span className="font-jak text-[39px] font-semibold">{initial}</span>
-            )}
-          </span>
+      {/* the portrait */}
+      <div className="enter flex flex-col items-start gap-8 self-start" style={{ "--i": 2 } as React.CSSProperties}>
+        <div className="flex h-56 w-44 items-center justify-center overflow-hidden rounded-[16px] bg-paper-3" style={{ outline: "1px solid rgba(0,0,0,.1)", outlineOffset: -1 }}>
+          {shown ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={shown} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <span className="font-[family-name:var(--font-head)] text-[61px] font-extralight text-ink-2">{initial}</span>
+          )}
         </div>
         <label className="btn btn-paper cursor-pointer">
           {shown ? "Change photo" : "Add a photo"}
@@ -112,9 +108,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
             }}
           />
         </label>
-        <p className="t-sm text-center text-[color:var(--ink-60)]">
-          Stored in Supabase Storage. Only the link lives in the table.
-        </p>
+        <p className="t-sm max-w-[28ch] text-ink-2">Stored in Supabase Storage. Only the link lives in the table.</p>
       </div>
     </form>
   );

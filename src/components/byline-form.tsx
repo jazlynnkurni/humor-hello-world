@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { DiscMark } from "./disc-mark";
+import { useEffect, useState } from "react";
 
-/** Onboarding fields with a live byline print: the card shows what their name will look like under a joke. */
+/** Onboarding fields with a live byline: the line shows what will print under their jokes. */
 export function BylineForm({
   action,
   first = "",
@@ -19,11 +18,25 @@ export function BylineForm({
 }) {
   const [f, setF] = useState(first);
   const [l, setL] = useState(last);
+  const [j, setJ] = useState(joke);
+  const [carried, setCarried] = useState<{ setup: string; punchline: string } | null>(null);
+  useEffect(() => {
+    /* the punchline typed at sign-in comes with them */
+    try {
+      const raw = localStorage.getItem("pending_joke");
+      if (raw && !joke) {
+        const p = JSON.parse(raw);
+        setCarried(p);
+        setJ(`${p.setup} ${p.punchline}`);
+        localStorage.removeItem("pending_joke");
+      }
+    } catch {}
+  }, [joke]);
   const name = [f.trim(), l.trim()].filter(Boolean).join(" ");
 
   return (
-    <div className="grid gap-8 md:grid-cols-[1fr_1fr] md:gap-12">
-      <form action={action} className="flex flex-col gap-5">
+    <div className="grid gap-16 md:grid-cols-2">
+      <form action={action} className="flex flex-col gap-8">
         <label className="field">
           <span>First name</span>
           <input name="first_name" value={f} onChange={(e) => setF(e.target.value)} required autoFocus className="input" />
@@ -34,24 +47,18 @@ export function BylineForm({
         </label>
         <label className="field">
           <span>Favorite Columbia joke, optional</span>
-          <textarea name="favorite_joke" defaultValue={joke} className="input" rows={3} />
+          <textarea name="favorite_joke" value={j} onChange={(e) => setJ(e.target.value)} className="input" rows={2} />
+          {carried && <span className="t-sm normal-case tracking-normal text-ink-3" style={{ fontFamily: "var(--font-body)", fontWeight: 300, letterSpacing: 0, textTransform: "none" }}>Carried over from your sign-in. Edit it or clear it.</span>}
         </label>
-        {error === "missing" && <p className="t-sm text-oxblood">Both names are required.</p>}
-        <button className="btn btn-ink mt-2 self-start">Print my byline</button>
+        {error === "missing" && <p className="t-sm text-plum">Both names are required.</p>}
+        <button className="btn btn-ink self-start">Print my byline</button>
       </form>
 
-      <div className="card enter flex flex-col gap-4 self-start p-6" style={{ "--i": 2 } as React.CSSProperties}>
-        <DiscMark size={16} />
-        <p className="font-jak text-[20px] font-semibold leading-[1.3]">Why did the joke want a byline?</p>
-        <p className="riso-ink text-[18px]">So someone would finally take credit for it.</p>
-        <p className="t-sm mt-2 flex items-center gap-2 text-[color:var(--ink-60)]">
-          <span
-            className="inline-block h-2 w-2 rounded-full transition-colors duration-300"
-            style={{ background: name ? "var(--oxblood)" : "var(--ink-12)" }}
-          />
-          <span className="transition-opacity duration-300" style={{ opacity: name ? 1 : 0.5 }}>
-            {name || "your name here"}
-          </span>
+      <div className="enter self-start border-t border-[color:var(--hair)] pt-8" style={{ "--i": 2 } as React.CSSProperties}>
+        <p className="text-[25px] font-light leading-[1.35]">Why did the joke want a byline?</p>
+        <p className="pt-3 text-[20px] font-light text-ink-2">So someone would finally take credit for it.</p>
+        <p className="eyebrow mt-6 transition-opacity duration-300" style={{ opacity: name ? 1 : 0.45 }}>
+          {name || "your name here"}
         </p>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { VennLogin } from "@/components/riso/VennLogin";
+import { PunchlineLogin } from "@/components/punchline-login";
 import { getUserAndProfile, profileIsComplete } from "@/lib/profile";
 
 export const metadata = { title: "Sign in" };
@@ -10,17 +10,15 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const { error } = await searchParams;
 
   return (
-    <main className="mx-auto max-w-7xl px-6 pt-32 md:px-16">
-      <div className="max-w-[560px]">
+    <main className="mx-auto max-w-7xl px-6 pt-40 md:px-16">
+      <div className="head">
         <p className="eyebrow">Sign in</p>
-        <h1 className="t-h1 mt-3">You, and the jokes.</h1>
-        <p className="t-lg mt-4 text-[color:var(--ink-60)]">
-          Members can laugh at a joke and print their own. The green disc is you. Drag it into the other one.
-        </p>
-        {error && <p className="t-sm mt-4 text-oxblood">That sign-in didn&apos;t finish. Try once more.</p>}
+        <h1 className="t-h1">The password is a punchline.</h1>
+        <p className="lede">Finish the setup below with anything at all. Members say ha to a joke and print their own.</p>
+        {error && <p className="t-sm mt-4 text-plum">That sign-in didn&apos;t finish. Try once more.</p>}
       </div>
-      <div className="mt-6">
-        <VennLogin />
+      <div className="mt-16">
+        <PunchlineLogin />
       </div>
     </main>
   );
