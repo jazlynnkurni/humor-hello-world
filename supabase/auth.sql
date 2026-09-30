@@ -59,3 +59,6 @@ drop policy if exists "Users delete own avatar" on storage.objects;
 create policy "Users delete own avatar" on storage.objects
   for delete to authenticated
   using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Profile customization: a short bio.
+alter table public.profiles add column if not exists bio text;
