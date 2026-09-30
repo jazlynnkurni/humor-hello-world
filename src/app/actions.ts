@@ -13,9 +13,8 @@ function bust() {
 
 export async function toggleLaugh(jokeId: number, laughed: boolean) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const claims = (await supabase.auth.getClaims()).data?.claims;
+  const user = claims?.sub ? { id: claims.sub } : null;
   if (!user) redirect("/login");
 
   if (laughed) await supabase.from("laughs").delete().eq("joke_id", jokeId).eq("user_id", user.id);
@@ -25,9 +24,8 @@ export async function toggleLaugh(jokeId: number, laughed: boolean) {
 
 export async function createJoke(formData: FormData) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const claims = (await supabase.auth.getClaims()).data?.claims;
+  const user = claims?.sub ? { id: claims.sub } : null;
   if (!user) redirect("/login");
 
   const setup = String(formData.get("setup") ?? "").trim().slice(0, 240);
@@ -48,9 +46,8 @@ export async function createJoke(formData: FormData) {
 
 export async function deleteJoke(jokeId: number) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const claims = (await supabase.auth.getClaims()).data?.claims;
+  const user = claims?.sub ? { id: claims.sub } : null;
   if (!user) redirect("/login");
   await supabase.from("jokes").delete().eq("id", jokeId).eq("author_id", user.id);
   bust();

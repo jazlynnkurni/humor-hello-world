@@ -74,7 +74,7 @@ export function NavPill({ items }: { items: NavItem[] }) {
             <button type="submit" className="quiet">Sign out</button>
           </form>
         ) : (
-          <Link key={it.href} href={it.href} className={it.quiet ? "quiet" : undefined} aria-current={path === it.href ? "page" : undefined}>
+          <Link key={it.href} href={it.href} prefetch={true} className={it.quiet ? "quiet" : undefined} aria-current={path === it.href ? "page" : undefined}>
             {it.label}
           </Link>
         ),

@@ -6,9 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function saveNames(formData: FormData) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const claims = (await supabase.auth.getClaims()).data?.claims;
+  const user = claims?.sub ? { id: claims.sub } : null;
   if (!user) redirect("/login");
 
   const first_name = String(formData.get("first_name") ?? "").trim();

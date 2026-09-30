@@ -27,9 +27,10 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  /* getClaims verifies the JWT locally (JWKS cached) and refreshes it when it has
+     expired, so the session stays fresh without an auth-server round trip per page. */
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims?.sub ? data.claims : null;
 
   const path = request.nextUrl.pathname;
   const gated = ["/members", "/profile", "/onboarding", "/write"];

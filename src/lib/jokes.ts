@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getUserAndProfile } from "@/lib/profile";
 
 export type Author = {
   id: string;
@@ -26,10 +27,7 @@ type Row = Omit<Joke, "laughs" | "laughed" | "author"> & { laughs: { count: numb
 
 /** Every joke, with its laugh count, whether the viewer laughed, and a byline. */
 export async function fetchJokes(filter: JokeFilter = "all", limit?: number): Promise<Joke[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [supabase, { user }] = await Promise.all([createClient(), getUserAndProfile()]);
 
   let q = supabase
     .from("jokes")
@@ -45,17 +43,14 @@ export async function fetchJokes(filter: JokeFilter = "all", limit?: number): Pr
   const rows = (data ?? []) as unknown as Row[];
 
   const authorIds = [...new Set(rows.map((r) => r.author_id).filter(Boolean))] as string[];
+  const [authorRows, laughRows] = await Promise.all([
+    authorIds.length ? supabase.from("authors").select("id, first_name, last_name, avatar_url").in("id", authorIds) : Promise.resolve({ data: [] }),
+    user ? supabase.from("laughs").select("joke_id").eq("user_id", user.id) : Promise.resolve({ data: [] }),
+  ]);
   const authors = new Map<string, Author>();
-  if (authorIds.length) {
-    const { data: a } = await supabase.from("authors").select("id, first_name, last_name, avatar_url").in("id", authorIds);
-    for (const x of (a ?? []) as Author[]) authors.set(x.id, x);
-  }
-
+  for (const x of (authorRows.data ?? []) as Author[]) authors.set(x.id, x);
   const mine = new Set<number>();
-  if (user) {
-    const { data: l } = await supabase.from("laughs").select("joke_id").eq("user_id", user.id);
-    for (const x of l ?? []) mine.add(x.joke_id as number);
-  }
+  for (const x of laughRows.data ?? []) mine.add((x as { joke_id: number }).joke_id);
 
   return rows.map((r) => ({
     ...r,
