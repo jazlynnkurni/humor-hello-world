@@ -32,7 +32,7 @@ export function Composer({
   };
 
   return (
-    <div className="grid gap-8 md:grid-cols-[1fr_1fr] md:gap-12">
+    <div className="grid gap-10 md:grid-cols-[1fr_1fr] md:gap-16">
       <form action={action} className="flex flex-col gap-5">
         <label className="field">
           <span>Setup</span>

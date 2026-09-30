@@ -10,13 +10,13 @@ import { RisoSheets, type SheetsHandle } from "./RisoSheets";
  * The overlap IS the button: how much they cross sets how present it is.
  */
 const SHEETS = [
-  { x: 0.3, y: 0.5, r: 0.17 },
-  { x: 0.7, y: 0.5, r: 0.17 },
+  { x: 0.3, y: 0.58, r: 0.17 },
+  { x: 0.7, y: 0.58, r: 0.17 },
 ];
 /* r is a share of the width, so a phone needs a bigger one to fill the same hand */
 const SHEETS_NARROW = [
-  { x: 0.26, y: 0.5, r: 0.24 },
-  { x: 0.74, y: 0.5, r: 0.24 },
+  { x: 0.26, y: 0.62, r: 0.24 },
+  { x: 0.74, y: 0.62, r: 0.24 },
 ];
 const SWATCH = ["#9ba69c", "#827a85"]; // sage, mauve
 const THRESHOLD = 0.34;
@@ -95,8 +95,8 @@ export function VennLogin() {
   const presence = Math.min(1, Math.max(0, (ratio - 0.08) / (THRESHOLD - 0.08)));
 
   return (
-    /* full-bleed, so the canvas has no edge to show against the page */
-    <div className="relative left-1/2 h-[68svh] min-h-[440px] w-screen -translate-x-1/2">
+    /* the canvas is the whole page behind the heading, so it has no edge to show */
+    <div className="absolute inset-0">
       {narrow !== null && (
         <RisoSheets
           sheets={narrow ? SHEETS_NARROW : SHEETS}

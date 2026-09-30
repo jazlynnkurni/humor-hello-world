@@ -465,7 +465,7 @@ export function mountSheets(cv, sheets, swatch, opts) {
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, target.tex);
     gl.uniform1i(post.u.uTex, 0); gl.uniform2f(post.u.uRes, W, H);
     gl.uniform1i(post.u.uStyle, P.style);
-    gl.uniform1f(post.u.uGrain, d ? STYLE[P.style].grain : P.grainLight); gl.uniform1f(post.u.uEncode, target.encode); gl.uniform1f(post.u.uMode, d ? 0 : 1);
+    gl.uniform1f(post.u.uGrain, d ? (P.grainDark ?? STYLE[P.style].grain) : P.grainLight); gl.uniform1f(post.u.uEncode, target.encode); gl.uniform1f(post.u.uMode, d ? 0 : 1);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 

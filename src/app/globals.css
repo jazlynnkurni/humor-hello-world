@@ -1,12 +1,26 @@
 @import "tailwindcss";
 
 /* ---- the system, carried over from jazlynnwashere.com ------------------- */
-:root {
+:root, [data-theme="light"] {
+  /* TWO MODES, ONE PALETTE, as on jazlynnwashere.com: the ground and the ink swap
+     places, everything else is a tint of whichever is the ink. The one colour that
+     cannot swap is the interaction colour: oxblood on paper, gold on charcoal. */
   --paper: #faf9f7;
-  --ink: #1c1a17;
-  --oxblood: #340414;
+  --ink: #14171b;
+  --ink-60: rgba(20, 23, 27, 0.66);
+  --ink-40: rgba(20, 23, 27, 0.42);
+  --ink-12: rgba(20, 23, 27, 0.16);
+  --ink-06: rgba(20, 23, 27, 0.07);
+  --touch: #340414;
+  --plate: #faf9f7;
+  --outline: oklch(0 0 0 / 0.1);
+  --pill: #fff;
+  --pill-shadow: 0 1px 2px rgba(20, 23, 27, 0.04), 0 6px 20px rgba(20, 23, 27, 0.07);
+  --shadow-card: 0 1px 2px rgba(20, 23, 27, 0.05), 0 12px 32px -16px rgba(20, 23, 27, 0.22);
+  color-scheme: light;
+
+  --oxblood: var(--touch);
   --gold: #a99939;
-  /* her eight riso swatches, the ones that do work here */
   --sage: #9ba69c;
   --mauve: #827a85;
   --lilac: #c4c1c8;
@@ -14,26 +28,38 @@
   --grey: #c7c7c7;
   --stone: #c2beb3;
 
-  --ink-06: rgba(28, 26, 23, 0.06);
-  --ink-12: rgba(28, 26, 23, 0.12);
-  --ink-40: rgba(28, 26, 23, 0.4);
-  --ink-60: rgba(28, 26, 23, 0.6);
-
   --font-jak: var(--font-jakarta), "Plus Jakarta Sans", system-ui, sans-serif;
   --font-hel: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   /* concentric radii: outer 24, inner 16, chip 9999 */
   --r-card: 24px;
   --r-inner: 16px;
-
-  --shadow-card: 0 1px 2px rgba(28, 26, 23, 0.05), 0 12px 32px -16px rgba(28, 26, 23, 0.22);
-  --shadow-float: 0 1px 2px rgba(28, 26, 23, 0.06), 0 16px 48px -20px rgba(28, 26, 23, 0.3);
 }
+[data-theme="dark"] {
+  --paper: #1c1a17;
+  --ink: #faf9f7;
+  --ink-60: rgba(250, 249, 247, 0.66);
+  --ink-40: rgba(250, 249, 247, 0.42);
+  --ink-12: rgba(250, 249, 247, 0.16);
+  --ink-06: rgba(250, 249, 247, 0.08);
+  --touch: #a99939;
+  /* lifted four points off the ground so a plate reads as a plate */
+  --plate: #262320;
+  --outline: oklch(1 0 0 / 0.1);
+  --pill: #262320;
+  --pill-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+/* every colour eases to the other mode, her way */
+html.theming, html.theming * { transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease, outline-color 0.5s ease !important; }
 
 @theme inline {
   --color-paper: var(--paper);
   --color-ink: var(--ink);
-  --color-oxblood: var(--oxblood);
+  --color-oxblood: var(--touch);
+  --color-touch: var(--touch);
+  --color-plate: var(--plate);
   --color-gold: var(--gold);
   --color-sage: var(--sage);
   --color-mauve: var(--mauve);
@@ -77,28 +103,25 @@ p { text-wrap: pretty; }
 .eyebrow {
   font-family: var(--font-jak);
   font-weight: 500;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--ink-60);
 }
 
 /* ---- surfaces ------------------------------------------------------------ */
 .card {
-  background: #fff;
+  background: var(--plate);
   border-radius: var(--r-card);
   box-shadow: var(--shadow-card);
-  outline: 1px solid var(--ink-06);
+  outline: 1px solid var(--outline);
   outline-offset: -1px;
 }
 .pill {
-  background: rgba(255, 255, 255, 0.72);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  background: var(--pill);
   border-radius: 9999px;
-  box-shadow: var(--shadow-float);
-  outline: 1px solid var(--ink-06);
+  box-shadow: var(--pill-shadow);
+  outline: 1px solid var(--outline);
   outline-offset: -1px;
 }
 
@@ -121,11 +144,12 @@ p { text-wrap: pretty; }
 .btn:active { transform: scale(0.96); }
 .btn:disabled { opacity: 0.55; pointer-events: none; }
 .btn-ink { background: var(--ink); color: var(--paper); }
-.btn-ink:hover { background: var(--oxblood); }
-.btn-paper { background: #fff; color: var(--ink); box-shadow: var(--shadow-card); outline: 1px solid var(--ink-12); outline-offset: -1px; }
-.btn-paper:hover { color: var(--oxblood); }
+.btn-ink:hover { background: var(--touch); color: var(--paper); }
+[data-theme="dark"] .btn-ink:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 88%, transparent); }
+.btn-paper { background: var(--plate); color: var(--ink); box-shadow: var(--shadow-card); outline: 1px solid var(--outline); outline-offset: -1px; }
+.btn-paper:hover { color: var(--touch); }
 .btn-ghost { color: var(--ink-60); padding: 0 12px; }
-.btn-ghost:hover { color: var(--oxblood); }
+.btn-ghost:hover { color: var(--touch); }
 
 .field {
   display: flex;
@@ -143,10 +167,10 @@ p { text-wrap: pretty; }
   min-height: 48px;
   padding: 12px 16px;
   border-radius: var(--r-inner);
-  background: #fff;
+  background: var(--plate);
   color: var(--ink);
   font: 300 16px/1.4 var(--font-hel);
-  outline: 1px solid var(--ink-12);
+  outline: 1px solid var(--outline);
   outline-offset: -1px;
   transition: outline-color 160ms ease, box-shadow 160ms ease;
 }
@@ -161,13 +185,65 @@ textarea.input { resize: vertical; min-height: 96px; }
   text-underline-offset: 3px;
   transition: text-decoration-color 160ms ease, color 160ms ease;
 }
-.link:hover { color: var(--oxblood); text-decoration-color: var(--oxblood); }
+.link:hover { color: var(--touch); text-decoration-color: var(--touch); }
 
 /* riso misregistration: the second plate a hair off */
 .riso-ink {
   color: var(--ink);
-  text-shadow: 1.5px 1px 0 rgba(52, 4, 20, 0.22);
+  text-shadow: 1.5px 1px 0 color-mix(in srgb, var(--touch) 24%, transparent);
 }
+
+/* ---- nav, read off jazlynnwashere.com ------------------------------------ */
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 60; pointer-events: none; }
+.nav::before {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0; height: 104px; pointer-events: none;
+  background: linear-gradient(var(--paper) 46%, color-mix(in srgb, var(--paper) 70%, transparent) 72%, transparent);
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.nav.grounded::before { opacity: 1; }
+.nav .in { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; position: relative; }
+.nav .mark { pointer-events: auto; display: flex; align-items: center; gap: 10px; font-family: var(--font-jak); font-weight: 600; font-size: 13px; letter-spacing: -0.01em; padding: 10px 0; color: var(--ink); }
+.nav .links {
+  pointer-events: auto; position: relative; isolation: isolate;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--pill); border-radius: 999px; padding: 4px 12px 4px 8px; box-shadow: var(--pill-shadow);
+  outline: 1px solid var(--outline); outline-offset: -1px;
+}
+.nav .links .drop {
+  position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: 999px; pointer-events: none; z-index: 0;
+  background: color-mix(in srgb, var(--ink) 8%, transparent); opacity: 0; will-change: transform, width;
+  transition: transform 0.46s cubic-bezier(0.33, 1.18, 0.37, 1), width 0.46s cubic-bezier(0.33, 1.18, 0.37, 1), opacity 0.46s cubic-bezier(0.33, 1.18, 0.37, 1);
+}
+.nav .links .drop.out { transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+.nav .links .drop.on { opacity: 1; }
+.nav .links > a, .nav .links > button, .nav .links > form { position: relative; z-index: 1; }
+.nav .links a, .nav .links form button {
+  font-family: var(--font-hel); font-weight: 400; font-size: 14.5px; letter-spacing: 0; color: var(--ink); text-decoration: none;
+  padding: 10px 16px; border-radius: 999px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+  transition: color 0.18s ease, background 0.18s ease;
+}
+.nav .links a:hover, .nav .links form button:hover { color: var(--touch); }
+.nav .links a:active, .nav .links form button:active { transform: scale(0.96); }
+.nav .links a[aria-current="page"] { color: var(--touch); }
+.nav .links .quiet { color: var(--ink-60); }
+@media (max-width: 720px) {
+  .nav .links a, .nav .links form button { padding: 9px 10px; font-size: 12.5px; }
+  .nav .links { gap: 0; padding: 4px 8px 4px 6px; max-width: calc(100vw - 88px); overflow-x: auto; scrollbar-width: none; }
+  .nav .links::-webkit-scrollbar { display: none; }
+  .nav .links .drop { display: none; }
+  .nav .mark .word { display: none; }
+  .nav .in { padding-top: 16px; }
+}
+.nav #theme {
+  width: 38px; height: 38px; border-radius: 50%; border: 0; background: transparent; color: var(--ink-60);
+  cursor: pointer; padding: 0; display: grid; place-items: center; transition: background 0.18s ease, color 0.18s ease;
+}
+.nav #theme:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
+.nav #theme:active { transform: scale(0.96); }
+.nav #theme svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+[data-theme="dark"] .nav #theme .sun { display: none; }
+:root:not([data-theme="dark"]) .nav #theme .moon { display: none; }
 
 /* the sheets canvas */
 canvas[data-grab="1"] { cursor: grab; }
@@ -183,8 +259,8 @@ canvas[data-grab="1"]:active { cursor: grabbing; }
   animation-delay: calc(var(--i, 0) * 70ms);
 }
 @keyframes stamp {
-  0% { box-shadow: 0 0 0 0 rgba(52, 4, 20, 0.35), var(--shadow-card); }
-  100% { box-shadow: 0 0 0 18px rgba(52, 4, 20, 0), var(--shadow-card); }
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--touch) 35%, transparent), var(--shadow-card); }
+  100% { box-shadow: 0 0 0 18px transparent, var(--shadow-card); }
 }
 .stamped { animation: stamp 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) 1; }
 @media (prefers-reduced-motion: reduce) {

@@ -10,17 +10,14 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const { error } = await searchParams;
 
   return (
-    <main className="mx-auto max-w-7xl px-6 pt-32 md:px-16">
-      <div className="max-w-[560px]">
-        <p className="eyebrow">Sign in</p>
-        <h1 className="t-h1 mt-3">You, and the jokes.</h1>
-        <p className="t-lg mt-4 text-[color:var(--ink-60)]">
-          Members can laugh at a joke and print their own. The green disc is you. Drag it into the other one.
+    <main className="relative isolate min-h-screen overflow-hidden">
+      <VennLogin />
+      <div className="pointer-events-none relative mx-auto max-w-md px-6 pt-32 text-center">
+        <h1 className="t-h1">Sign in</h1>
+        <p className="mt-3 text-[color:var(--ink-60)]">
+          Members get the jokes that didn&apos;t make the public list. The green disc is you. Drag it into the other one.
         </p>
-        {error && <p className="t-sm mt-4 text-oxblood">That sign-in didn&apos;t finish. Try once more.</p>}
-      </div>
-      <div className="mt-6">
-        <VennLogin />
+        {error && <p className="t-sm mt-3 text-oxblood">That sign-in didn&apos;t finish. Try once more.</p>}
       </div>
     </main>
   );

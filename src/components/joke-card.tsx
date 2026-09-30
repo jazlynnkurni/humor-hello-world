@@ -99,7 +99,7 @@ export function JokeCard({
             </p>
           </div>
         </div>
-        {!isOpen && (
+        {!isOpen && forcedOpen === undefined && (
           <span className="font-jak text-[13px] font-medium text-[color:var(--ink-40)] transition-colors group-hover:text-oxblood">
             tap for the punchline
           </span>
@@ -118,7 +118,7 @@ export function JokeCard({
             </>
           ) : joke.source_url ? (
             <a href={joke.source_url} target="_blank" rel="noreferrer" className="link truncate">
-              from r/columbia ↗
+              source thread ↗
             </a>
           ) : (
             <span>from the record</span>

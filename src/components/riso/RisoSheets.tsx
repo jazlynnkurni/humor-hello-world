@@ -64,6 +64,7 @@ export function RisoSheets({
         if (!handle) return;
         handle.P.opacityLight = opacity;
         handle.P.grainLight = grain;
+        (handle.P as { grainDark?: number }).grainDark = grain;
         handle.setStyle(style);
         mountRef.current?.(handle);
       })
