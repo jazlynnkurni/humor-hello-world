@@ -9,14 +9,18 @@ export default async function ProfilePage() {
   if (!user) redirect("/login");
 
   return (
-    <main className="mx-auto max-w-7xl px-6 pt-40 md:px-16">
-      <div className="head">
+    <main className="mx-auto max-w-7xl px-6 pt-32 md:px-16">
+      <div className="max-w-[560px]">
         <p className="eyebrow">Profile</p>
-        <h1 className="t-h1">Your byline, your portrait.</h1>
-        <p className="lede">{user.email}</p>
+        <h1 className="t-h1 mt-3">Your byline, your portrait.</h1>
+        <p className="t-lg mt-4 text-[color:var(--ink-60)]">{user.email}</p>
       </div>
-      <div className="mt-16">
-        <ProfileForm profile={profile ?? { id: user.id, email: user.email ?? null, first_name: null, last_name: null, avatar_url: null, favorite_joke: null }} />
+      <div className="mt-12">
+        <ProfileForm
+          profile={
+            profile ?? { id: user.id, email: user.email ?? null, first_name: null, last_name: null, avatar_url: null, favorite_joke: null }
+          }
+        />
       </div>
     </main>
   );
