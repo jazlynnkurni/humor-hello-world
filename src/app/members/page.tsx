@@ -41,7 +41,10 @@ export default async function MembersPage() {
       </section>
 
       <div className="mt-10 flex gap-3">
-        <Link href="/write" className="btn btn-ink">
+        <Link href="/rate" className="btn btn-ink">
+          Rate today&apos;s punchlines
+        </Link>
+        <Link href="/write" className="btn btn-paper">
           Write a joke
         </Link>
         <Link href="/profile" className="btn btn-paper">
