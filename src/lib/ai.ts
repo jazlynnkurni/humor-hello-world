@@ -27,7 +27,15 @@ export function buildPrompt(setup: string) {
 
 export async function generatePunchlines(setup: string): Promise<{ punchlines: string[]; prompt: string; model: string }> {
   const prompt = buildPrompt(setup);
-  const { text } = await generateText({ model: model(), prompt, maxOutputTokens: 300, temperature: 0.9 });
+  /* Gemini 2.5 thinks by default and bills those tokens against maxOutputTokens, so a
+     small budget can come back empty. Thinking off: three one-liners do not need it. */
+  const { text } = await generateText({
+    model: model(),
+    prompt,
+    maxOutputTokens: 1200,
+    temperature: 0.9,
+    providerOptions: { google: { thinkingConfig: { thinkingBudget: 0 } } },
+  });
 
   let punchlines: string[] = [];
   const m = text.match(/\[[\s\S]*\]/);
