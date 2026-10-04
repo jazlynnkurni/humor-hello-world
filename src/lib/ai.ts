@@ -23,8 +23,8 @@ export function buildPrompt(setup: string) {
     "You write punchlines for Columbia Jokes, a humor site for Columbia University students in New York.",
     "The reader is a junior, new to the city, living in the dorms, exploring on weekends, chronically online.",
     `Setup: "${setup}"`,
-    "Write exactly 3 different punchlines that complete or respond to the setup.",
-    "Rules: each under 22 words. Specific to Columbia or New York. Dry, not corny. No hashtags, no emoji, no slurs, nothing cruel about a real person. PG-13.",
+    "Write exactly 3 different punchlines about the setup.",
+    "Rules: each is a complete sentence that reads on its own, since it is shown as a card under the setup. Do not start mid-sentence. Each under 22 words. Specific to Columbia or New York. Dry, not corny. No hashtags, no emoji, no slurs, nothing cruel about a real person. PG-13.",
     "Return ONLY a JSON array of 3 strings.",
   ].join("\n");
 }
