@@ -12,6 +12,7 @@
   --ink-12: rgba(20, 23, 27, 0.16);
   --ink-06: rgba(20, 23, 27, 0.07);
   --touch: #340414;
+  --overlap: #4a4448;
   --plate: #faf9f7;
   --outline: oklch(0 0 0 / 0.1);
   --pill: #fff;
@@ -43,6 +44,7 @@
   --ink-12: rgba(250, 249, 247, 0.16);
   --ink-06: rgba(250, 249, 247, 0.08);
   --touch: #a99939;
+  --overlap: #b9b2b6;
   /* lifted four points off the ground so a plate reads as a plate */
   --plate: #262320;
   --outline: oklch(1 0 0 / 0.1);
@@ -250,6 +252,7 @@ canvas[data-grab="1"] { cursor: grab; }
 canvas[data-grab="1"]:active { cursor: grabbing; }
 
 /* ---- motion -------------------------------------------------------------- */
+/* no filter: blur here on purpose; blur and blend modes leave grey compositing boxes in Chrome */
 @keyframes enter {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: none; }
