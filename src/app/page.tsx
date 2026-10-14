@@ -34,7 +34,7 @@ export default async function Home() {
         </div>
 
         {/* the stamp, right */}
-        <div className="enter w-full max-w-[280px] justify-self-start md:w-[320px] md:max-w-none md:justify-self-end" style={{ "--i": 1 } as React.CSSProperties} data-cur="struck in New York">
+        <div className="enter w-full max-w-[280px] justify-self-start md:w-[320px] md:max-w-none md:justify-self-end" style={{ "--i": 1 } as React.CSSProperties} data-cur="wusup new york">
           <Stamp className="block aspect-[1/1.2] w-full" />
         </div>
       </div>
