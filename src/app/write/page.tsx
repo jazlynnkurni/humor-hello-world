@@ -53,7 +53,7 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
           <p className="eyebrow">Today&apos;s setup</p>
           <h1 className="t-h1 mt-3">{setup}</h1>
           <p className="t-sm mt-3 text-[color:var(--ink-60)]">
-            A new setup every day at midnight, New York time. Members ask the model for three punchlines, everyone signed in votes, the best one wins the day.
+            A new setup every day at midnight, New York time. Members ask the model for three punchlines, everyone signed in says lol to the ones that land, and the most lols wins the day.
           </p>
         </div>
         <nav className="pill flex h-12 items-center gap-1 self-start px-2 font-jak text-[14px] font-medium" aria-label="View">
@@ -75,7 +75,7 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
           <GenerateForm action={generate} setup={setup} left={Math.max(0, 5 - used)} />
         ) : (
           <div className="card flex flex-wrap items-center justify-between gap-4 p-6">
-            <p className="text-[color:var(--ink-60)]">Sign in to generate punchlines, vote on them, and write your own.</p>
+            <p className="text-[color:var(--ink-60)]">Sign in to generate punchlines, lol at them, and write your own.</p>
             <Link href="/login" className="btn btn-ink">
               Sign in
             </Link>
@@ -83,7 +83,7 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
         )}
         {sp.error && (
           <p className="t-sm mt-3 text-oxblood">
-            {sp.error === "cap" ? "You've used today's five generations. Vote on the others and come back tomorrow." : sp.error === "empty" ? "Both lines are required." : decodeURIComponent(sp.error)}
+            {sp.error === "cap" ? "You've used today's five generations. Lol at the others and come back tomorrow." : sp.error === "empty" ? "Both lines are required." : decodeURIComponent(sp.error)}
           </p>
         )}
       </div>
@@ -97,7 +97,7 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
 
       {cands.length === 0 ? (
         <div className="card mt-12 flex flex-col items-start gap-3 p-8">
-          <h2 className="t-h3">Nothing to rate yet.</h2>
+          <h2 className="t-h3">Nothing to lol at yet.</h2>
           <p className="text-[color:var(--ink-60)]">{view === "today" ? "Be the first to ask for three punchlines on today's setup." : "Nothing has been generated yet."}</p>
         </div>
       ) : (

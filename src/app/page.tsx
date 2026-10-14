@@ -26,7 +26,7 @@ export default async function Home() {
               Columbia Jokes
             </h1>
             <p className="t-lg enter text-[color:var(--ink-60)]" style={{ "--i": 1 } as React.CSSProperties}>
-              A new setup every day. Members ask the model for punchlines, everyone votes, the best one wins the day.
+              A new setup every day. Members ask the model for punchlines, everyone says lol, the best one wins the day.
             </p>
             <div className="enter flex flex-wrap gap-3" style={{ "--i": 2 } as React.CSSProperties}>
               <Link href="/write" className="btn btn-ink">

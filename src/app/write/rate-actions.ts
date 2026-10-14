@@ -49,7 +49,7 @@ export async function generate(formData: FormData) {
   redirect(`/write?new=${gen.id}${custom ? "&view=new" : ""}`);
 }
 
-/** One row per member per candidate. Same value again removes it; the other value flips it. */
+/** One row per member per candidate: a lol. Pressing again takes it back. */
 export async function vote(candidateId: number, value: 1 | -1) {
   const { supabase, userId } = await viewer();
   if (!userId) redirect("/login");

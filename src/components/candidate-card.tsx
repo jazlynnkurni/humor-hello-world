@@ -8,9 +8,8 @@ import { vote } from "@/app/write/rate-actions";
 
 /** One AI punchline. Up, down, or take it back. The vote is optimistic and the row is written server-side. */
 export function CandidateCard({ c, index = 0, canVote, highlight, showSetup }: { c: Candidate; index?: number; canVote: boolean; highlight?: boolean; showSetup?: boolean }) {
-  const [mine, setMine] = useState<-1 | 0 | 1>(c.mine);
-  const [up, setUp] = useState(c.up);
-  const [down, setDown] = useState(c.down);
+  const [lol, setLol] = useState(c.mine === 1);
+  const [count, setCount] = useState(c.up);
   const [pending, start] = useTransition();
   const ref = useRef<HTMLElement>(null);
 
@@ -18,17 +17,14 @@ export function CandidateCard({ c, index = 0, canVote, highlight, showSetup }: {
     if (highlight) ref.current?.scrollIntoView({ block: "center", behavior: "smooth" });
   }, [highlight]);
 
-  function cast(v: 1 | -1) {
-    const prev = mine;
-    const next: -1 | 0 | 1 = prev === v ? 0 : v;
-    setMine(next);
-    setUp((n) => n + (v === 1 ? (next === 1 ? 1 : prev === 1 ? -1 : 0) : prev === 1 && next === -1 ? -1 : 0));
-    setDown((n) => n + (v === -1 ? (next === -1 ? 1 : prev === -1 ? -1 : 0) : prev === -1 && next === 1 ? -1 : 0));
-    start(() => vote(c.id, v));
+  function laugh() {
+    const next = !lol;
+    setLol(next);
+    setCount((n) => n + (next ? 1 : -1));
+    start(() => vote(c.id, 1));
   }
 
   const by = c.author ? [c.author.first_name, c.author.last_name].filter(Boolean).join(" ") || "a member" : "a member";
-  const score = up - down;
 
   return (
     <article
@@ -39,8 +35,7 @@ export function CandidateCard({ c, index = 0, canVote, highlight, showSetup }: {
       <header className="flex items-center justify-between gap-3">
         <span />
         <span className="tabular-nums font-jak text-[13px] font-medium text-[color:var(--ink-60)]">
-          {score > 0 ? "+" : ""}
-          {score}
+          {count} lol{count === 1 ? "" : "s"}
         </span>
       </header>
 
@@ -57,18 +52,25 @@ export function CandidateCard({ c, index = 0, canVote, highlight, showSetup }: {
         </span>
 
         {canVote ? (
-          <span className="flex items-center gap-1">
-            <VoteButton on={mine === 1} disabled={pending} onClick={() => cast(1)} label={`Upvote, ${up}`}>
-              ▲ <span className="tabular-nums">{up}</span>
-            </VoteButton>
-            <VoteButton on={mine === -1} disabled={pending} onClick={() => cast(-1)} label={`Downvote, ${down}`}>
-              ▼ <span className="tabular-nums">{down}</span>
-            </VoteButton>
-          </span>
+          <button
+            type="button"
+            onClick={laugh}
+            disabled={pending}
+            aria-pressed={lol}
+            className="btn btn-paper h-9 min-h-0 gap-2 px-3 text-[14px]"
+          >
+            <span
+              className="h-3 w-3 rounded-full transition-[transform,background-color] duration-300 ease-[cubic-bezier(.34,1.4,.5,1)]"
+              style={{ background: lol ? "var(--oxblood)" : "var(--ink-12)", transform: lol ? "scale(1.25)" : "none" }}
+            />
+            {lol ? "lol" : "lol?"}
+            <span className="tabular-nums text-[color:var(--ink-60)]">{count}</span>
+          </button>
         ) : (
-          <Link href="/login" className="btn btn-paper h-9 min-h-0 gap-3 px-3 text-[13px]">
-            <span>▲ {up}</span>
-            <span>▼ {down}</span>
+          <Link href="/login" className="btn btn-paper h-9 min-h-0 gap-2 px-3 text-[14px]">
+            <span className="h-3 w-3 rounded-full" style={{ background: "var(--ink-12)" }} />
+            lol?
+            <span className="tabular-nums text-[color:var(--ink-60)]">{count}</span>
           </Link>
         )}
       </footer>
@@ -76,17 +78,3 @@ export function CandidateCard({ c, index = 0, canVote, highlight, showSetup }: {
   );
 }
 
-function VoteButton({ on, disabled, onClick, label, children }: { on: boolean; disabled: boolean; onClick: () => void; label: string; children: React.ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      aria-pressed={on}
-      aria-label={label}
-      className={`btn h-9 min-h-0 gap-1.5 px-3 text-[13px] ${on ? "btn-ink" : "btn-paper"}`}
-    >
-      {children}
-    </button>
-  );
-}
