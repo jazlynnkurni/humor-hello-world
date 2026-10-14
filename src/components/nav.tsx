@@ -8,8 +8,8 @@ export async function Nav() {
   const items: NavItem[] = [
     { href: "/", label: "Home", smHide: true },
     { href: "/jokes", label: "Jokes" },
-    { href: "/rate", label: "Rate" },
-    ...(user ? ([{ href: "/write", label: "Write" }, { href: "/profile", label: "Profile" }] as NavItem[]) : [{ href: "/login", label: "Sign in" }]),
+    { href: "/write", label: "Write" },
+    ...(user ? ([{ href: "/profile", label: "Profile" }] as NavItem[]) : [{ href: "/login", label: "Sign in" }]),
   ];
 
   return (

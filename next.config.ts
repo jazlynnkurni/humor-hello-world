@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  /* the rate page merged into write */
+  async redirects() {
+    return [{ source: "/rate", destination: "/write", permanent: true }];
+  },
 };
 
 export default nextConfig;

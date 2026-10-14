@@ -29,8 +29,8 @@ export default async function Home() {
               A new setup every day. Members ask the model for punchlines, everyone votes, the best one wins the day.
             </p>
             <div className="enter flex flex-wrap gap-3" style={{ "--i": 2 } as React.CSSProperties}>
-              <Link href="/rate" className="btn btn-ink">
-                Rate today&apos;s punchlines →
+              <Link href="/write" className="btn btn-ink">
+                Today&apos;s setup →
               </Link>
               <Link href="/jokes" className="btn btn-paper">
                 See the jokes

@@ -81,7 +81,7 @@ export function SheetsLab() {
             <h1 className="t-display">Columbia Jokes</h1>
             <p className="t-lg text-[color:var(--ink-60)]">A new setup every day. Members ask the model for punchlines, everyone votes, the best one wins the day.</p>
             <div className="flex flex-wrap gap-3">
-              <span className="btn btn-ink">Rate today&apos;s punchlines →</span>
+              <span className="btn btn-ink">Today&apos;s setup →</span>
               <span className="btn btn-paper">See the jokes</span>
               <span className="btn btn-paper">Sign in</span>
             </div>

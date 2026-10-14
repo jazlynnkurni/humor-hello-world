@@ -24,14 +24,14 @@ export async function generate(formData: FormData) {
   const custom = String(formData.get("setup") ?? "").trim().slice(0, 140);
   const setup = custom || setupFor(day);
 
-  if ((await generationsToday(userId, day)) >= DAILY_CAP) redirect("/rate?error=cap");
+  if ((await generationsToday(userId, day)) >= DAILY_CAP) redirect("/write?error=cap");
 
   let result: Awaited<ReturnType<typeof generatePunchlines>>;
   try {
     result = await generatePunchlines(setup);
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Generation failed.";
-    redirect(`/rate?error=${encodeURIComponent(msg.slice(0, 160))}`);
+    redirect(`/write?error=${encodeURIComponent(msg.slice(0, 160))}`);
   }
 
   const { data: gen, error } = await supabase
@@ -39,14 +39,14 @@ export async function generate(formData: FormData) {
     .insert({ user_id: userId, setup, prompt: result.prompt, model: result.model, day })
     .select("id")
     .single();
-  if (error) redirect(`/rate?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`/write?error=${encodeURIComponent(error.message)}`);
 
   const { error: cErr } = await supabase.from("candidates").insert(result.punchlines.map((p) => ({ generation_id: gen.id, punchline: p })));
-  if (cErr) redirect(`/rate?error=${encodeURIComponent(cErr.message)}`);
+  if (cErr) redirect(`/write?error=${encodeURIComponent(cErr.message)}`);
 
-  revalidatePath("/rate");
+  revalidatePath("/write");
   revalidatePath("/");
-  redirect(`/rate?new=${gen.id}${custom ? "&view=new" : ""}`);
+  redirect(`/write?new=${gen.id}${custom ? "&view=new" : ""}`);
 }
 
 /** One row per member per candidate. Same value again removes it; the other value flips it. */
@@ -59,6 +59,6 @@ export async function vote(candidateId: number, value: 1 | -1) {
   else if (existing.value === value) await supabase.from("votes").delete().eq("candidate_id", candidateId).eq("user_id", userId);
   else await supabase.from("votes").update({ value }).eq("candidate_id", candidateId).eq("user_id", userId);
 
-  revalidatePath("/rate");
+  revalidatePath("/write");
   revalidatePath("/");
 }

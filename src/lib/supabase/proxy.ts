@@ -33,7 +33,7 @@ export async function updateSession(request: NextRequest) {
   const user = data?.claims?.sub ? data.claims : null;
 
   const path = request.nextUrl.pathname;
-  const gated = ["/members", "/profile", "/onboarding", "/write"];
+  const gated = ["/members", "/profile", "/onboarding"];
   if (!user && gated.some((p) => path.startsWith(p))) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";

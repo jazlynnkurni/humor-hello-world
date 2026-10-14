@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import type { Candidate } from "@/lib/rate";
-import { vote } from "@/app/rate/actions";
+import { vote } from "@/app/write/rate-actions";
 
 
 /** One AI punchline. Up, down, or take it back. The vote is optimistic and the row is written server-side. */
