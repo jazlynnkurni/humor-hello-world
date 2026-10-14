@@ -8,9 +8,11 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
  * own identity. Either way, no key in the repo. (2.5 Flash is closed to new
  * API users as of October 2026.)
  */
-const PRIMARY = "gemini-3.5-flash";
-const FALLBACK = "gemini-3.1-flash-lite";
-export const MODEL_ID = `google/${PRIMARY}`;
+/* tried in order; Google rate-limits individual models with "high demand" 503s,
+   so a short list with a short timeout each is what keeps the button working */
+const MODELS = ["gemini-3-flash-preview", "gemini-3.5-flash", "gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.1-flash-lite", "gemini-flash-latest"];
+const PER_MODEL_MS = 12000;
+export const MODEL_ID = `google/${MODELS[0]}`;
 
 function model(id: string): LanguageModel {
   const key = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
@@ -39,15 +41,24 @@ export async function generatePunchlines(setup: string): Promise<{ punchlines: s
       prompt,
       maxOutputTokens: 1200,
       temperature: 0.9,
+      abortSignal: AbortSignal.timeout(PER_MODEL_MS),
       providerOptions: { google: { thinkingConfig: { thinkingBudget: 0 } } },
     });
-  let used = PRIMARY;
-  let text: string;
-  try {
-    ({ text } = await ask(PRIMARY));
-  } catch {
-    used = FALLBACK;
-    ({ text } = await ask(FALLBACK));
+  let used = "";
+  let text = "";
+  let lastErr: unknown = null;
+  for (const id of MODELS) {
+    try {
+      ({ text } = await ask(id));
+      used = id;
+      break;
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  if (!used) {
+    const msg = lastErr instanceof Error ? lastErr.message : "";
+    throw new Error(/demand|overloaded|503|429|timeout|abort/i.test(msg) ? "Google's models are overloaded right now. Try again in a minute." : msg || "Generation failed.");
   }
 
   let punchlines: string[] = [];

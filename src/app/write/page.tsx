@@ -13,6 +13,8 @@ import { fetchCandidates, generationsToday, type View } from "@/lib/rate";
 import { generate } from "./rate-actions";
 
 export const dynamic = "force-dynamic";
+/* a generation can wait on a few models in turn; give the route room */
+export const maxDuration = 60;
 export const metadata = { title: "Write" };
 
 const VIEWS: { key: View; label: string }[] = [
