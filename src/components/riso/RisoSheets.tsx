@@ -79,5 +79,5 @@ export function RisoSheets({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <canvas ref={ref} className={className} aria-hidden />;
+  return <canvas ref={ref} className={className} aria-hidden data-lab="" />;
 }
