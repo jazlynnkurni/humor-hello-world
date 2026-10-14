@@ -246,6 +246,23 @@ textarea.input { resize: vertical; min-height: 96px; }
 [data-theme="dark"] .nav #theme .sun { display: none; }
 :root:not([data-theme="dark"]) .nav #theme .moon { display: none; }
 
+/* ---- the cursor, from jazlynnwashere.com ----------------------------------- */
+html.has-cur, html.has-cur * { cursor: none !important; }
+#cur { position: fixed; left: 0; top: 0; width: 12px; height: 12px; pointer-events: none; z-index: 1000; transform: translate(-100px, -100px); will-change: transform; opacity: 0;
+  transition: opacity 0.2s ease, width 0.34s cubic-bezier(0.2, 0.7, 0.2, 1), height 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s; }
+#cur.on { opacity: 1; }
+#cur i { position: absolute; inset: 0; border-radius: 50%; background: var(--ink); box-shadow: 0 3px 14px rgba(20, 23, 27, 0.3); transform: scale(1);
+  transition: transform 0.32s cubic-bezier(0.33, 1.18, 0.37, 1), opacity 0.2s ease, border-radius 0.3s ease, background 0.2s ease, box-shadow 0.32s ease; }
+[data-theme="dark"] #cur i { box-shadow: 0 3px 14px rgba(250, 249, 247, 0.26); }
+#cur b { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); white-space: nowrap; font: 500 12.5px var(--font-jak); letter-spacing: 0.01em; color: var(--paper); opacity: 0; transition: opacity 0.16s ease; }
+#cur.pill { width: var(--pw, 180px); height: 34px; transition: height 0.32s cubic-bezier(0.33, 1.18, 0.37, 1), width 0.5s cubic-bezier(0.33, 1.18, 0.37, 1) 0.05s; }
+#cur.pill i { border-radius: 999px; transform: none; opacity: 1; box-shadow: 0 8px 26px rgba(20, 23, 27, 0.22); }
+#cur.pill b { opacity: 1; transition: opacity 0.22s ease 0.22s; }
+#cur.hot i { transform: scale(2.6); opacity: 0.62; box-shadow: 0 6px 22px rgba(20, 23, 27, 0.22); }
+[data-theme="dark"] #cur.hot i { box-shadow: 0 6px 22px rgba(250, 249, 247, 0.2); }
+#cur.down i { transform: scale(2.1); opacity: 0.75; }
+#cur.text { opacity: 0; }
+
 /* the sheets canvas */
 canvas[data-grab="1"] { cursor: grab; }
 canvas[data-grab="1"]:active { cursor: grabbing; }

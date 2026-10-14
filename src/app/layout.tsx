@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
+import { Cursor } from "@/components/cursor";
 
 /* self-hosted: a build that fetches from Google Fonts can fail on their side,
    which is what took down one automatic deployment. The variable file covers
@@ -34,6 +35,7 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(e)
         <Nav />
         <div className="flex-1">{children}</div>
         <Footer />
+        <Cursor />
       </body>
     </html>
   );
