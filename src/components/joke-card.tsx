@@ -121,7 +121,7 @@ export function JokeCard({
               className="h-3 w-3 rounded-full transition-[transform,background-color] duration-300 ease-[cubic-bezier(.34,1.4,.5,1)]"
               style={{ background: laughed ? "var(--oxblood)" : "var(--ink-12)", transform: laughed ? "scale(1.25)" : "none" }}
             />
-            {laughed ? "LOL" : "LOL?"}
+            {laughed ? "lol" : "lol?"}
             <span className="tabular-nums text-[color:var(--ink-60)]">{count}</span>
           </button>
         ) : (
