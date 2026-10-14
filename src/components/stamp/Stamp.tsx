@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { CROWN_BOX, CROWN_PATH } from "./crown-path";
 
 /**
  * A postage stamp struck from her texture lab (~/Desktop/revamp-proto/texture-lab):
@@ -25,23 +26,6 @@ function swell(x: number, y: number, W: number, H: number, f: number, phase: num
   return Math.sin(u * f + phase) * Math.sin(v * f + phase * 1.7);
 }
 
-/* the crown, in unit coordinates of a 1 x 1 box: a band, three points with a
-   pearl on each, and a small cross on the centre one. Drawn as a mask, then
-   softened, then added to the height field, which is what an emboss die does. */
-function crownPath(p: Path2D, s: number, ox: number, oy: number) {
-  const X = (u: number) => ox + u * s, Y = (v: number) => oy + v * s;
-  /* band */
-  p.moveTo(X(0.12), Y(0.72)); p.lineTo(X(0.88), Y(0.72)); p.lineTo(X(0.88), Y(0.92)); p.lineTo(X(0.12), Y(0.92)); p.closePath();
-  /* body: from the band up to three points */
-  p.moveTo(X(0.12), Y(0.72));
-  p.lineTo(X(0.08), Y(0.30)); p.lineTo(X(0.30), Y(0.52)); p.lineTo(X(0.50), Y(0.14)); p.lineTo(X(0.70), Y(0.52)); p.lineTo(X(0.92), Y(0.30));
-  p.lineTo(X(0.88), Y(0.72)); p.closePath();
-  /* pearls */
-  for (const [u, v] of [[0.08, 0.27], [0.50, 0.10], [0.92, 0.27]] as [number, number][]) { p.moveTo(X(u) + 0.045 * s, Y(v)); p.arc(X(u), Y(v), 0.045 * s, 0, Math.PI * 2); }
-  /* the cross above the centre pearl */
-  p.moveTo(X(0.476), Y(-0.08)); p.lineTo(X(0.524), Y(-0.08)); p.lineTo(X(0.524), Y(0.05)); p.lineTo(X(0.476), Y(0.05)); p.closePath();
-  p.moveTo(X(0.42), Y(-0.045)); p.lineTo(X(0.58), Y(-0.045)); p.lineTo(X(0.58), Y(0.0)); p.lineTo(X(0.42), Y(0.0)); p.closePath();
-}
 
 /* the stamp die: teeth biting inward, a whole tooth kept at every corner */
 function diePath(c: CanvasRenderingContext2D, w: number, h: number) {
@@ -85,15 +69,19 @@ function strike(W: number, H: number, dark: boolean): ImageData {
   const inset = Math.min(W, H) * 0.085, rule = Math.max(1.5, Math.min(W, H) * 0.012);
   m.fillRect(inset, inset, W - inset * 2, rule); m.fillRect(inset, H - inset - rule, W - inset * 2, rule);
   m.fillRect(inset, inset, rule, H - inset * 2); m.fillRect(W - inset - rule, inset, rule, H - inset * 2);
-  /* the crown, centred, a little above the middle */
-  const s = Math.min(W, H) * 0.46;
-  const p = new Path2D();
-  crownPath(p, s, (W - s) / 2, H * 0.5 - s * 0.47);
-  m.fill(p);
+  /* the crown itself, fitted to half the card's width and centred a little above the middle */
+  const cw = Math.min(W, H) * 0.52, k = cw / CROWN_BOX.w, ch = CROWN_BOX.h * k;
+  m.save();
+  m.translate((W - cw) / 2, H * 0.5 - ch * 0.52);
+  m.scale(k, k);
+  m.translate(-CROWN_BOX.x, -CROWN_BOX.y);
+  m.fill(new Path2D(CROWN_PATH));
+  m.restore();
   const md = m.getImageData(0, 0, W, H).data;
   let mask = new Float32Array(W * H);
   for (let i = 0; i < W * H; i++) mask[i] = md[i * 4] / 255;
-  mask = blur(mask, W, H, Math.max(1, Math.round(Math.min(W, H) * 0.007)));
+  /* a light soften only: the crown's small cutouts have to survive */
+  mask = blur(mask, W, H, Math.max(1, Math.round(Math.min(W, H) * 0.004)));
 
   const h = new Float32Array(W * H);
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
