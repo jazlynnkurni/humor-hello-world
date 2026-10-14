@@ -23,7 +23,7 @@ export default async function Home() {
           {/* the words, left */}
           <div className="pointer-events-auto flex max-w-[560px] flex-col items-start gap-6">
             <h1 className="t-display enter" style={{ "--i": 0 } as React.CSSProperties}>
-              Columbia Jokes
+              Columbia Laughs
             </h1>
             <p className="t-lg enter text-[color:var(--ink-60)]" style={{ "--i": 1 } as React.CSSProperties}>
               Who&apos;s Columbia&apos;s funniest student? Could it be you? Generate jokes or write your own. Whoever gets the most lols wins.
