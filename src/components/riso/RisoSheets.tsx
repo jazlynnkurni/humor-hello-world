@@ -16,6 +16,8 @@ export type SheetsHandle = {
   toCss: (x: number, y: number) => [number, number];
   cssR: (r: number) => number;
   destroy: () => void;
+  layout: () => Record<number, { x: number; y: number; moved: boolean }>;
+  setLayout: (map: Record<number, { x: number; y: number }>) => void;
   setStyle: (n: number) => void;
   P: { opacityLight: number; grainLight: number };
 };

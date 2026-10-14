@@ -10,7 +10,6 @@ export async function Nav() {
     { href: "/", label: "Home", smHide: true },
     { href: "/jokes", label: "Jokes" },
     { href: "/rate", label: "Rate" },
-    { href: "/members", label: "Members" },
     ...(user ? ([{ href: "/write", label: "Write" }, { href: "/profile", label: name }, { signout: true }] as NavItem[]) : [{ href: "/login", label: "Sign in" }]),
   ];
 

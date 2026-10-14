@@ -350,7 +350,7 @@ export function mountSheets(cv, sheets, swatch, opts) {
   let W = 0, H = 0, dpr = 1, unit = 1, cssW = 1, cssH = 1, target = null;
   const rnd = mulberry(20260913);
   const discs = sheets.map((s, i) => ({
-    ux: s.x, ux0: s.x, uy: s.y, ur: s.r, moved: false,   /* unit hero coords; ux0 is the designed x, ux the fitted one */
+    id: i, ux: s.x, ux0: s.x, uy: s.y, ur: s.r, moved: false,   /* unit hero coords; ux0 is the designed x, ux the fitted one */
     x: 0, y: 0, r: 0, tx: 0, ty: 0, vx: 0, vy: 0,
     rot: rnd() * Math.PI * 2, rotV: (rnd() - 0.5) * 0.010,
     ink: i % swatch.length, op: 0.84 + rnd() * 0.38, seed: rnd() * 100,
@@ -497,5 +497,12 @@ export function mountSheets(cv, sheets, swatch, opts) {
     removeEventListener("pointerup", drop); removeEventListener("pointercancel", drop); removeEventListener("themechange", onTheme);
     const ext = gl.getExtension("WEBGL_lose_context"); if (ext) ext.loseContext();
   }
-  return { discs, draw, wake, P, toCss, cssR, destroy, setStyle(n) { P.style = Math.max(0, Math.min(4, n | 0)); draw(); } };
+  /* where every sheet is, in unit hero coordinates, by the id it was made with */
+  function layout() { const o = {}; for (const d of discs) o[d.id] = { x: d.ux, y: d.uy, moved: d.moved }; return o; }
+  /* put the sheets where a saved layout says, and redraw */
+  function setLayout(map) {
+    for (const d of discs) { const m = map && map[d.id]; if (m && typeof m.x === "number" && typeof m.y === "number") { d.ux = m.x; d.uy = m.y; d.moved = true; } }
+    resize(); draw();
+  }
+  return { discs, draw, wake, P, toCss, cssR, destroy, layout, setLayout, setStyle(n) { P.style = Math.max(0, Math.min(4, n | 0)); draw(); } };
 }
