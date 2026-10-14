@@ -1,13 +1,9 @@
-import Link from "next/link";
 import { HeroSheets } from "@/components/riso/HeroSheets";
 import { Stamp } from "@/components/stamp/Stamp";
-import { getUserAndProfile } from "@/lib/profile";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const { user } = await getUserAndProfile();
-
   return (
     <main className="relative isolate min-h-screen overflow-hidden">
       {/* her discs, a cluster at each edge; drag them */}

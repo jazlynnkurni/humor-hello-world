@@ -80,11 +80,6 @@ export function SheetsLab() {
           <div className="flex max-w-[560px] flex-col items-start gap-6">
             <h1 className="t-display">Columbia Laughs</h1>
             <p className="t-lg text-[color:var(--ink-60)]">Who&apos;s Columbia&apos;s funniest student? Could it be you? Generate jokes or write your own. Whoever gets the most lols wins.</p>
-            <div className="flex flex-wrap gap-3">
-              <span className="btn btn-ink">Today&apos;s setup →</span>
-              <span className="btn btn-paper">See the jokes</span>
-              <span className="btn btn-paper">Sign in</span>
-            </div>
           </div>
           <div className="w-full max-w-[280px] justify-self-start md:w-[320px] md:max-w-none md:justify-self-end">
             <Stamp className="block aspect-[1/1.2] w-full" />
