@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Stamp } from "@/components/stamp/Stamp";
+import { HaIntro } from "@/components/intro/HaIntro";
 import { getUserAndProfile } from "@/lib/profile";
 
 export const dynamic = "force-dynamic";
@@ -8,9 +9,10 @@ export default async function Home() {
   const { user } = await getUserAndProfile();
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-7xl flex-col items-center px-6 pb-16 pt-28 md:px-16">
+    <main className="relative mx-auto flex min-h-screen max-w-7xl flex-col items-center px-6 pb-[22vh] pt-24 md:px-16">
+      <HaIntro />
       {/* the stamp: struck card with the crown raised out of it */}
-      <div className="enter w-full max-w-[360px]" style={{ "--i": 0 } as React.CSSProperties}>
+      <div className="enter w-full max-w-[220px] sm:max-w-[280px]" style={{ "--i": 0 } as React.CSSProperties}>
         <Stamp className="block aspect-[1/1.2] w-full" />
       </div>
 
