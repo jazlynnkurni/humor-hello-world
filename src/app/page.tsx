@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DreamScene } from "@/components/dream/DreamScene";
+import { Stamp } from "@/components/stamp/Stamp";
 import { getUserAndProfile } from "@/lib/profile";
 
 export const dynamic = "force-dynamic";
@@ -8,13 +8,13 @@ export default async function Home() {
   const { user } = await getUserAndProfile();
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-7xl flex-col items-center px-6 pb-16 pt-24 md:px-16">
-      {/* the scene, feathered into the paper on every side, so it has no frame */}
-      <div className="enter w-full max-w-[760px]" style={{ "--i": 0 } as React.CSSProperties}>
-        <DreamScene className="block aspect-[16/10] w-full" />
+    <main className="mx-auto flex min-h-screen max-w-7xl flex-col items-center px-6 pb-16 pt-28 md:px-16">
+      {/* the stamp: struck card with the crown raised out of it */}
+      <div className="enter w-full max-w-[360px]" style={{ "--i": 0 } as React.CSSProperties}>
+        <Stamp className="block aspect-[1/1.2] w-full" />
       </div>
 
-      <div className="-mt-4 flex max-w-[560px] flex-col items-center gap-6 text-center md:-mt-8">
+      <div className="mt-2 flex max-w-[560px] flex-col items-center gap-6 text-center">
         <h1 className="t-display enter" style={{ "--i": 1 } as React.CSSProperties}>
           Columbia Jokes
         </h1>
