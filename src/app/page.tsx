@@ -10,11 +10,11 @@ export default async function Home() {
   return (
     <main className="mx-auto flex min-h-screen max-w-7xl flex-col items-center px-6 pb-16 pt-24 md:px-16">
       {/* the scene, feathered into the paper on every side, so it has no frame */}
-      <div className="enter w-full max-w-[1120px]" style={{ "--i": 0 } as React.CSSProperties}>
-        <DreamScene className="block aspect-[3/2] w-full" />
+      <div className="enter w-full max-w-[760px]" style={{ "--i": 0 } as React.CSSProperties}>
+        <DreamScene className="block aspect-[16/10] w-full" />
       </div>
 
-      <div className="-mt-6 flex max-w-[560px] flex-col items-center gap-6 text-center md:-mt-10">
+      <div className="-mt-4 flex max-w-[560px] flex-col items-center gap-6 text-center md:-mt-8">
         <h1 className="t-display enter" style={{ "--i": 1 } as React.CSSProperties}>
           Columbia Jokes
         </h1>

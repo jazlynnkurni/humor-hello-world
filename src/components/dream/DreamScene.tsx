@@ -3,94 +3,93 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Columbia at night, as a dream. The photo is the texture; the shader softens it,
- * lets the windows and lamps breathe and flicker on their own clocks, drifts it very
- * slowly, lays film grain over it, and feathers every edge into the page's paper so
- * the scene has no frame. Two passes: a quarter-size bloom of the bright points,
- * then the composite.
+ * City lights at night, in fog. Nothing is loaded; the whole scene is drawn by
+ * the shader. A deep blue sky falls into a band of fog near the horizon, and a
+ * scatter of lights sits in it at different depths: the far ones small, dim and
+ * diffused, the near ones large soft bokeh. Each light breathes on a drifting
+ * noise field. Film grain moves over it and every edge feathers into the paper.
  */
 const VERT = `#version 300 es
 void main(){ vec2 p = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2); gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0); }`;
 
-const COMMON = `
-float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
-float vnoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
-  return mix(mix(hash(i), hash(i + vec2(1,0)), f.x), mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), f.x), f.y); }
-float lum(vec3 c){ return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
-/* the lights breathe as a drifting noise field: one slow, one quick with the odd dip.
-   A field can only produce soft gradients, so nothing bands or boxes around a lamp. */
-float flicker(vec2 uv, float t){
-  float slow = vnoise(uv * vec2(14.0, 10.0) + vec2(t * 0.35, -t * 0.27));
-  float quick = vnoise(uv * vec2(34.0, 24.0) + vec2(-t * 1.9, t * 1.3));
-  float dip = smoothstep(0.86, 1.0, quick);
-  return (0.84 + 0.16 * slow) * (1.0 - 0.35 * dip);
-}`;
-
-/* pass 1: bright pass, blurred wide, at quarter size */
-const FRAG_BLOOM = `#version 300 es
+const FRAG = `#version 300 es
 precision highp float; out vec4 o;
-uniform sampler2D uTex; uniform vec2 uRes; uniform float uTime;
-${COMMON}
-void main(){
-  vec2 uv = gl_FragCoord.xy / uRes;
-  vec3 acc = vec3(0.0); float wsum = 0.0;
-  for (int i = 0; i < 24; i++) {
-    float a = float(i) * 2.399963; float r = sqrt((float(i) + 0.5) / 24.0) * 0.022;
-    vec2 off = vec2(cos(a), sin(a)) * r * vec2(uRes.y / uRes.x, 1.0);
-    vec3 c = texture(uTex, uv + off).rgb;
-    float b = smoothstep(0.42, 0.9, lum(c));
-    float w = 1.0 - float(i) / 26.0;
-    acc += c * b * w * flicker(uv + off, uTime); wsum += w;
-  }
-  o = vec4(acc / wsum, 1.0);
-}`;
-
-/* pass 2: the soft base, the bloom, the breathing lights, grain, and the feather */
-const FRAG_MAIN = `#version 300 es
-precision highp float; out vec4 o;
-uniform sampler2D uTex; uniform sampler2D uBloom;
 uniform vec2 uRes; uniform float uTime; uniform vec2 uPointer; uniform vec3 uPaper; uniform float uMotion;
-${COMMON}
+
+float hash(float n){ return fract(sin(n) * 43758.5453123); }
+float hash2(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+float vnoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash2(i), hash2(i + vec2(1,0)), f.x), mix(hash2(i + vec2(0,1)), hash2(i + vec2(1,1)), f.x), f.y); }
+float fbm(vec2 p){ float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { s += a * vnoise(p); p = p * 2.03 + 17.1; a *= 0.5; } return s; }
+
+/* a light breathes: slow field, quick field with the odd dip */
+float breathe(vec2 p, float t){
+  float slow = vnoise(p * 3.0 + vec2(t * 0.25, -t * 0.2));
+  float quick = vnoise(p * 9.0 + vec2(-t * 1.4, t * 1.1));
+  return (0.78 + 0.22 * slow) * (1.0 - 0.4 * smoothstep(0.86, 1.0, quick));
+}
+
 void main(){
   vec2 uv = gl_FragCoord.xy / uRes;
+  float asp = uRes.x / uRes.y;
+  vec2 p = (uv - 0.5) * vec2(asp, 1.0);          /* centred, aspect-true, y up */
   float t = uTime * uMotion;
-  /* a very slow drift and a hair of parallax, so it never sits still */
-  vec2 drift = vec2(sin(t * 0.11), cos(t * 0.09)) * 0.006 + uPointer * 0.008;
-  vec2 suv = (uv - 0.5) * 0.94 + 0.5 + drift;
 
-  /* dreamy base: a soft disc blur */
-  vec3 base = vec3(0.0); float ws = 0.0;
-  for (int i = 0; i < 16; i++) {
-    float a = float(i) * 2.399963; float r = sqrt((float(i) + 0.5) / 16.0) * 0.0045;
-    vec2 off = vec2(cos(a), sin(a)) * r * vec2(uRes.y / uRes.x, 1.0);
-    base += texture(uTex, suv + off).rgb; ws += 1.0;
+  /* sky: deep blue above, a fog band that warms toward the horizon */
+  vec3 skyTop = vec3(0.035, 0.045, 0.11);
+  vec3 skyLow = vec3(0.10, 0.11, 0.20);
+  vec3 col = mix(skyLow, skyTop, smoothstep(-0.1, 0.5, p.y));
+
+  /* fog: two drifting layers, thicker low down */
+  float fog1 = fbm(p * 1.6 + vec2(t * 0.02, t * 0.008));
+  float fog2 = fbm(p * 3.2 - vec2(t * 0.035, -t * 0.012) + 9.0);
+  float fogAmt = smoothstep(0.45, -0.35, p.y) * (0.55 + 0.45 * fog1);
+  vec3 fogCol = vec3(0.16, 0.15, 0.20) + vec3(0.07, 0.05, 0.02) * fog2;
+  col = mix(col, fogCol, fogAmt * 0.6);
+
+  /* the horizon's own glow, the city under the fog, kept low so the lights do the work */
+  float hz = exp(-pow((p.y + 0.08) * 3.2, 2.0));
+  col += vec3(0.30, 0.21, 0.11) * hz * (0.22 + 0.18 * fog2);
+
+  /* the lights */
+  vec3 glow = vec3(0.0);
+  for (int i = 0; i < 72; i++) {
+    float fi = float(i);
+    float depth = hash(fi * 7.1 + 1.3);                 /* 0 near .. 1 far */
+    /* golden-ratio spacing across the width, jittered, so no side crowds */
+    float x = (fract(fi * 0.6180339887 + 0.17) - 0.5) * 1.15 * asp + (hash(fi * 3.7 + 0.2) - 0.5) * 0.08;
+    /* the far lights crowd the horizon, the near ones sit lower and spread */
+    float y = mix(-0.32, 0.02, depth) + (hash(fi * 5.3 + 0.7) - 0.5) * mix(0.26, 0.18, depth);
+    /* a few towers: lights above the band */
+    if (hash(fi * 11.7) > 0.86) y += 0.18 + 0.22 * hash(fi * 13.1);
+    vec2 c = vec2(x, y) + uPointer * (0.03 * (1.0 - depth));
+    c.x += sin(t * 0.05 + fi) * 0.004 * (1.0 - depth);
+    float d = length(p - c);
+    float size = mix(0.026, 0.007, depth);
+    float core = exp(-d * d / (size * size));
+    float halo = exp(-d / (size * 5.0)) * 0.22;
+    float b = breathe(c, t + fi * 0.37);
+    float warm = hash(fi * 2.9 + 4.4);
+    vec3 tint = warm > 0.82 ? vec3(0.62, 0.74, 1.0) : mix(vec3(1.0, 0.78, 0.46), vec3(1.0, 0.92, 0.75), hash(fi * 6.1));
+    /* fog takes the far lights first */
+    float fogOnLight = 1.0 - fogAmt * mix(0.25, 0.75, depth);
+    glow += tint * (core + halo) * b * mix(0.8, 0.32, depth) * fogOnLight;
   }
-  base /= ws;
+  col += glow;
 
-  /* the lights themselves breathe */
-  float L = lum(base);
-  float lit = smoothstep(0.35, 0.8, L);
-  base *= mix(1.0, flicker(suv, t), lit);
+  /* a soft overall bloom of the band, as if the fog itself were lit */
+  col += vec3(0.30, 0.22, 0.12) * exp(-pow((p.y + 0.14) * 2.4, 2.0)) * 0.10 * (0.6 + 0.4 * fog1);
 
-  /* bloom from the quarter-size pass, warm */
-  vec3 bloom = texture(uBloom, suv).rgb;
-  vec3 col = base + bloom * vec3(1.15, 1.0, 0.85) * 0.9;
+  /* film grain, moving */
+  float g = hash2(gl_FragCoord.xy + fract(t * 7.0) * 100.0) - 0.5;
+  col += g * 0.04;
+  col = pow(max(col, 0.0), vec3(0.95));
 
-  /* a little lift and a cool shadow tint, the way night photos dream */
-  col = pow(col, vec3(0.92));
-  col = mix(col, col * vec3(0.9, 0.95, 1.12), 0.35 * (1.0 - lit));
-
-  /* film grain, pinned to the pixel, moving */
-  float g = hash(gl_FragCoord.xy + fract(t * 7.0) * 100.0) - 0.5;
-  col += g * 0.045;
-
-  /* feathered edges: a rounded rectangle, soft a fifth of the way in, into the paper */
-  vec2 q = abs(uv - 0.5) * 2.0;
-  vec2 rr = vec2(uRes.x / uRes.y, 1.0);
-  vec2 d = max(q * rr - (rr - 0.42), 0.0);
-  float edge = length(d) / 0.42;
-  float mask = 1.0 - smoothstep(0.35, 1.0, edge);
-  mask *= 1.0 - smoothstep(0.55, 1.6, length((uv - 0.5) * vec2(1.3, 1.9)));
+  /* feathered into the paper as a soft oval, so there is no edge or corner to read;
+     the fall-off starts near the middle and only reaches the paper at the canvas edge */
+  float r = length((uv - 0.5) * vec2(2.0, 2.3));
+  float mask = 1.0 - smoothstep(0.28, 1.0, r);
+  mask = pow(mask, 1.15);
   col = mix(uPaper, col, clamp(mask, 0.0, 1.0));
   o = vec4(col, 1.0);
 }`;
@@ -102,20 +101,12 @@ function compile(gl: WebGL2RenderingContext, type: number, src: string) {
   if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s) || "shader");
   return s;
 }
-function program(gl: WebGL2RenderingContext, fs: string) {
-  const p = gl.createProgram()!;
-  gl.attachShader(p, compile(gl, gl.VERTEX_SHADER, VERT));
-  gl.attachShader(p, compile(gl, gl.FRAGMENT_SHADER, fs));
-  gl.linkProgram(p);
-  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p) || "link");
-  return p;
-}
 function hexToRgb(hex: string): [number, number, number] {
   const n = parseInt(hex.trim().slice(1), 16);
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
 }
 
-export function DreamScene({ src = "/images/columbia-night.jpg", className = "" }: { src?: string; className?: string }) {
+export function DreamScene({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -126,18 +117,23 @@ export function DreamScene({ src = "/images/columbia-night.jpg", className = "" 
 
     let alive = true, raf = 0, visible = true;
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const pBloom = program(gl, FRAG_BLOOM), pMain = program(gl, FRAG_MAIN);
+    const prog = gl.createProgram()!;
+    try {
+      gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, VERT));
+      gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, FRAG));
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog) || "link");
+    } catch (e) {
+      console.error(e);
+      return;
+    }
     const vao = gl.createVertexArray();
-    const tex = gl.createTexture()!;
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([14, 16, 32]));
+    const U = {
+      res: gl.getUniformLocation(prog, "uRes"), time: gl.getUniformLocation(prog, "uTime"),
+      ptr: gl.getUniformLocation(prog, "uPointer"), paper: gl.getUniformLocation(prog, "uPaper"), motion: gl.getUniformLocation(prog, "uMotion"),
+    };
 
-    const bloomTex = gl.createTexture()!, fbo = gl.createFramebuffer()!;
-    let W = 0, H = 0, bw = 0, bh = 0, dpr = 1;
+    let W = 0, H = 0;
     const ptr = { x: 0, y: 0, tx: 0, ty: 0 };
     let paper: [number, number, number] = [0.98, 0.976, 0.969];
     const readPaper = () => { paper = hexToRgb(getComputedStyle(document.documentElement).getPropertyValue("--paper") || "#faf9f7"); };
@@ -146,19 +142,10 @@ export function DreamScene({ src = "/images/columbia-night.jpg", className = "" 
     function resize() {
       const r = cv!.getBoundingClientRect();
       if (!r.width) return;
-      dpr = Math.min(2, devicePixelRatio || 1);
+      /* capped at 1.5x: the scene is soft by design and the loop runs every frame */
+      const dpr = Math.min(1.5, devicePixelRatio || 1);
       W = Math.round(r.width * dpr); H = Math.round(r.height * dpr);
       cv!.width = W; cv!.height = H;
-      bw = Math.max(1, W >> 2); bh = Math.max(1, H >> 2);
-      gl!.bindTexture(gl!.TEXTURE_2D, bloomTex);
-      gl!.texImage2D(gl!.TEXTURE_2D, 0, gl!.RGBA, bw, bh, 0, gl!.RGBA, gl!.UNSIGNED_BYTE, null);
-      gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_MIN_FILTER, gl!.LINEAR);
-      gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_MAG_FILTER, gl!.LINEAR);
-      gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_S, gl!.CLAMP_TO_EDGE);
-      gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_T, gl!.CLAMP_TO_EDGE);
-      gl!.bindFramebuffer(gl!.FRAMEBUFFER, fbo);
-      gl!.framebufferTexture2D(gl!.FRAMEBUFFER, gl!.COLOR_ATTACHMENT0, gl!.TEXTURE_2D, bloomTex, 0);
-      gl!.bindFramebuffer(gl!.FRAMEBUFFER, null);
     }
 
     const t0 = performance.now();
@@ -168,42 +155,17 @@ export function DreamScene({ src = "/images/columbia-night.jpg", className = "" 
       const t = (now - t0) / 1000;
       ptr.x += (ptr.tx - ptr.x) * 0.04; ptr.y += (ptr.ty - ptr.y) * 0.04;
       gl!.bindVertexArray(vao);
-
-      gl!.bindFramebuffer(gl!.FRAMEBUFFER, fbo); gl!.viewport(0, 0, bw, bh);
-      gl!.useProgram(pBloom);
-      gl!.activeTexture(gl!.TEXTURE0); gl!.bindTexture(gl!.TEXTURE_2D, tex);
-      gl!.uniform1i(gl!.getUniformLocation(pBloom, "uTex"), 0);
-      gl!.uniform2f(gl!.getUniformLocation(pBloom, "uRes"), bw, bh);
-      gl!.uniform1f(gl!.getUniformLocation(pBloom, "uTime"), reduce ? 0 : t);
+      gl!.viewport(0, 0, W, H);
+      gl!.useProgram(prog);
+      gl!.uniform2f(U.res, W, H);
+      gl!.uniform1f(U.time, reduce ? 40 : t);
+      gl!.uniform2f(U.ptr, ptr.x, ptr.y);
+      gl!.uniform3f(U.paper, paper[0], paper[1], paper[2]);
+      gl!.uniform1f(U.motion, reduce ? 0 : 1);
       gl!.drawArrays(gl!.TRIANGLES, 0, 3);
-
-      gl!.bindFramebuffer(gl!.FRAMEBUFFER, null); gl!.viewport(0, 0, W, H);
-      gl!.useProgram(pMain);
-      gl!.activeTexture(gl!.TEXTURE0); gl!.bindTexture(gl!.TEXTURE_2D, tex);
-      gl!.activeTexture(gl!.TEXTURE1); gl!.bindTexture(gl!.TEXTURE_2D, bloomTex);
-      gl!.uniform1i(gl!.getUniformLocation(pMain, "uTex"), 0);
-      gl!.uniform1i(gl!.getUniformLocation(pMain, "uBloom"), 1);
-      gl!.uniform2f(gl!.getUniformLocation(pMain, "uRes"), W, H);
-      gl!.uniform1f(gl!.getUniformLocation(pMain, "uTime"), t);
-      gl!.uniform2f(gl!.getUniformLocation(pMain, "uPointer"), ptr.x, ptr.y);
-      gl!.uniform3f(gl!.getUniformLocation(pMain, "uPaper"), paper[0], paper[1], paper[2]);
-      gl!.uniform1f(gl!.getUniformLocation(pMain, "uMotion"), reduce ? 0 : 1);
-      gl!.drawArrays(gl!.TRIANGLES, 0, 3);
-
       if (!reduce && visible && !document.hidden) raf = requestAnimationFrame(draw);
     }
     const wake = () => { if (!raf) raf = requestAnimationFrame(draw); };
-
-    /* the photo, flipped so uv (0,0) is the bottom-left the shader expects */
-    const img = new Image();
-    img.onload = () => {
-      if (!alive) return;
-      gl.bindTexture(gl.TEXTURE_2D, tex);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
-      wake();
-    };
-    img.src = src;
 
     resize(); wake();
     const ro = new ResizeObserver(() => { resize(); wake(); });
@@ -225,7 +187,7 @@ export function DreamScene({ src = "/images/columbia-night.jpg", className = "" 
       document.removeEventListener("visibilitychange", onVis); removeEventListener("themechange", onTheme);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, [src]);
+  }, []);
 
   return <canvas ref={ref} className={className} aria-hidden />;
 }
