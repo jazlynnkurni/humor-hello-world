@@ -24,19 +24,6 @@ export default async function Home() {
             <p className="t-lg enter text-[color:var(--ink-60)]" style={{ "--i": 1 } as React.CSSProperties}>
               Who&apos;s Columbia&apos;s funniest student? Could it be you? Generate jokes or write your own. Whoever gets the most lols wins.
             </p>
-            <div className="enter flex flex-wrap gap-3" style={{ "--i": 2 } as React.CSSProperties}>
-              <Link href="/write" className="btn btn-ink">
-                Today&apos;s setup →
-              </Link>
-              <Link href="/jokes" className="btn btn-paper">
-                See the jokes
-              </Link>
-              {!user && (
-                <Link href="/login" className="btn btn-paper">
-                  Sign in
-                </Link>
-              )}
-            </div>
           </div>
 
           {/* the stamp, right */}
