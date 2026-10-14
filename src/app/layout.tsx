@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+/* self-hosted: a build that fetches from Google Fonts can fail on their side,
+   which is what took down one automatic deployment. The variable file covers
+   every weight the site uses. */
+const jakarta = localFont({
+  src: "./fonts/PlusJakartaSans-Variable.woff2",
+  weight: "200 800",
   variable: "--font-jakarta",
   display: "swap",
 });
