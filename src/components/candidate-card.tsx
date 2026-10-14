@@ -4,15 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import type { Candidate } from "@/lib/rate";
 import { vote } from "@/app/rate/actions";
-import { DiscMark } from "./disc-mark";
 
-const PAIRS: [string, string][] = [
-  ["var(--sage)", "var(--mauve)"],
-  ["var(--lilac)", "var(--sage)"],
-  ["var(--stone)", "var(--mauve)"],
-  ["var(--cream)", "var(--sage)"],
-  ["var(--grey)", "var(--mauve)"],
-];
 
 /** One AI punchline. Up, down, or take it back. The vote is optimistic and the row is written server-side. */
 export function CandidateCard({ c, index = 0, canVote, highlight, showSetup }: { c: Candidate; index?: number; canVote: boolean; highlight?: boolean; showSetup?: boolean }) {
@@ -21,7 +13,6 @@ export function CandidateCard({ c, index = 0, canVote, highlight, showSetup }: {
   const [down, setDown] = useState(c.down);
   const [pending, start] = useTransition();
   const ref = useRef<HTMLElement>(null);
-  const [a, b] = PAIRS[c.generation.id % PAIRS.length];
 
   useEffect(() => {
     if (highlight) ref.current?.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -46,7 +37,7 @@ export function CandidateCard({ c, index = 0, canVote, highlight, showSetup }: {
       className={`card enter flex flex-col gap-4 p-6 ${highlight ? "stamped" : ""}`}
     >
       <header className="flex items-center justify-between gap-3">
-        <DiscMark a={a} b={b} size={16} />
+        <span />
         <span className="tabular-nums font-jak text-[13px] font-medium text-[color:var(--ink-60)]">
           {score > 0 ? "+" : ""}
           {score}

@@ -4,22 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import type { Joke } from "@/lib/jokes";
 import { toggleLaugh } from "@/app/actions";
-import { DiscMark } from "./disc-mark";
 
-/* a byline's discs come from its id so the same author always prints the same pair */
-const PAIRS: [string, string][] = [
-  ["var(--sage)", "var(--mauve)"],
-  ["var(--lilac)", "var(--sage)"],
-  ["var(--stone)", "var(--mauve)"],
-  ["var(--cream)", "var(--sage)"],
-  ["var(--grey)", "var(--mauve)"],
-];
-function pairFor(key: string | number) {
-  const s = String(key);
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
-  return PAIRS[Math.abs(h) % PAIRS.length];
-}
 
 export function JokeCard({
   joke,
@@ -41,7 +26,6 @@ export function JokeCard({
   const [count, setCount] = useState(joke.laughs);
   const [pending, start] = useTransition();
   const ref = useRef<HTMLElement>(null);
-  const [a, b] = pairFor(joke.author_id ?? joke.id);
 
   useEffect(() => {
     if (highlight) ref.current?.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -67,7 +51,7 @@ export function JokeCard({
       className={`card enter group relative flex flex-col gap-4 p-6 ${highlight ? "stamped" : ""}`}
     >
       <header className="flex items-center justify-between">
-        <DiscMark a={a} b={b} size={16} />
+        <span />
         <span className="flex items-center gap-1" aria-label={`${joke.rating} of 5`}>
           {Array.from({ length: 5 }, (_, i) => (
             <span

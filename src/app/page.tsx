@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { HeroSheets } from "@/components/riso/HeroSheets";
+import { DreamScene } from "@/components/dream/DreamScene";
 import { getUserAndProfile } from "@/lib/profile";
 
 export const dynamic = "force-dynamic";
@@ -8,30 +8,31 @@ export default async function Home() {
   const { user } = await getUserAndProfile();
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden">
-      <div className="absolute inset-0 hidden md:block">
-        <HeroSheets />
-      </div>
-      <div className="absolute inset-0 md:hidden">
-        <HeroSheets narrow />
+    <main className="mx-auto flex min-h-screen max-w-7xl flex-col items-center px-6 pb-16 pt-24 md:px-16">
+      {/* the scene, feathered into the paper on every side, so it has no frame */}
+      <div className="enter w-full max-w-[1120px]" style={{ "--i": 0 } as React.CSSProperties}>
+        <DreamScene className="block aspect-[3/2] w-full" />
       </div>
 
-      <div className="pointer-events-none relative mx-auto flex min-h-screen max-w-7xl flex-col justify-end px-6 pb-16 pt-32 md:justify-center md:px-16">
-        <div className="pointer-events-auto flex max-w-[560px] flex-col items-start gap-6">
-          <h1 className="t-display enter" style={{ "--i": 0 } as React.CSSProperties}>
-            Columbia Jokes
-          </h1>
-          <p className="t-lg enter text-[color:var(--ink-60)]" style={{ "--i": 1 } as React.CSSProperties}>
-            A new setup every day. Members ask the model for punchlines, everyone votes, the best one wins the day.
-          </p>
-          <div className="enter flex flex-wrap gap-3" style={{ "--i": 2 } as React.CSSProperties}>
-            <Link href="/rate" className="btn btn-ink">
-              Rate today&apos;s punchlines →
+      <div className="-mt-6 flex max-w-[560px] flex-col items-center gap-6 text-center md:-mt-10">
+        <h1 className="t-display enter" style={{ "--i": 1 } as React.CSSProperties}>
+          Columbia Jokes
+        </h1>
+        <p className="t-lg enter text-[color:var(--ink-60)]" style={{ "--i": 2 } as React.CSSProperties}>
+          A new setup every day. Members ask the model for punchlines, everyone votes, the best one wins the day.
+        </p>
+        <div className="enter flex flex-wrap justify-center gap-3" style={{ "--i": 3 } as React.CSSProperties}>
+          <Link href="/rate" className="btn btn-ink">
+            Rate today&apos;s punchlines →
+          </Link>
+          <Link href="/jokes" className="btn btn-paper">
+            See the jokes
+          </Link>
+          {!user && (
+            <Link href="/login" className="btn btn-paper">
+              Sign in
             </Link>
-            <Link href="/jokes" className="btn btn-paper">
-              See the jokes
-            </Link>
-          </div>
+          )}
         </div>
       </div>
     </main>
