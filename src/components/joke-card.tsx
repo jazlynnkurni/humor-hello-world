@@ -127,7 +127,7 @@ export function JokeCard({
         ) : (
           <Link href="/login" className="btn btn-paper h-9 min-h-0 gap-2 px-3 text-[14px]">
             <span className="h-3 w-3 rounded-full" style={{ background: "var(--ink-12)" }} />
-            LOL?
+            lol?
             <span className="tabular-nums text-[color:var(--ink-60)]">{count}</span>
           </Link>
         )}
