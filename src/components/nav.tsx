@@ -4,13 +4,12 @@ import { NavPill, type NavItem } from "./nav-pill";
 
 export async function Nav() {
   const { user, profile } = await getUserAndProfile();
-  const name = profile?.first_name ?? user?.email?.split("@")[0] ?? "";
 
   const items: NavItem[] = [
     { href: "/", label: "Home", smHide: true },
     { href: "/jokes", label: "Jokes" },
     { href: "/rate", label: "Rate" },
-    ...(user ? ([{ href: "/write", label: "Write" }, { href: "/profile", label: name }, { signout: true }] as NavItem[]) : [{ href: "/login", label: "Sign in" }]),
+    ...(user ? ([{ href: "/write", label: "Write" }, { href: "/profile", label: "Profile" }] as NavItem[]) : [{ href: "/login", label: "Sign in" }]),
   ];
 
   return (

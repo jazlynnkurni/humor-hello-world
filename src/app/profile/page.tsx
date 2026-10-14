@@ -24,6 +24,13 @@ export default async function ProfilePage() {
           profile ?? { id: user.id, email: user.email ?? null, first_name: null, last_name: null, avatar_url: null, favorite_joke: null, bio: null, created_at: null }
         }
       />
+
+      <section className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-[color:var(--ink-12)] pt-8">
+        <p className="t-sm text-[color:var(--ink-60)]">Signed in with Google as {user.email}.</p>
+        <form action="/auth/signout" method="post">
+          <button className="btn btn-paper">Sign out</button>
+        </form>
+      </section>
     </main>
   );
 }
