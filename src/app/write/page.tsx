@@ -52,8 +52,9 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
         <div className="max-w-[640px]">
           <p className="eyebrow">Today&apos;s setup</p>
           <h1 className="t-h1 mt-3">{setup}</h1>
-          <p className="t-sm mt-3 text-[color:var(--ink-60)]">
-            A new setup every day at midnight, New York time. Members ask the model for three punchlines, everyone signed in says lol to the ones that land, and the most lols wins the day.
+          <p className="mt-4 font-jak text-[16px] font-semibold">Laughs @ Columbia</p>
+          <p className="t-sm mt-2 max-w-[560px] text-[color:var(--ink-60)]">
+            What are Columbia students laughing about this week? Get punchlines inspired by our Sidechat and Reddit, or be Columbia&apos;s next comedian: write your own joke and share it with everyone. Have fun lol-ing.
           </p>
         </div>
         <nav className="pill flex h-12 items-center gap-1 self-start px-2 font-jak text-[14px] font-medium" aria-label="View">
