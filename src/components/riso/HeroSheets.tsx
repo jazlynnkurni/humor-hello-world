@@ -3,13 +3,12 @@
 import { useCallback } from "react";
 import { RisoSheets, type SheetsHandle } from "./RisoSheets";
 
-/* her arrangement, read off her screen on 2026-10-13: a stack up the left edge with
-   one big sheet behind the title, and a loose column down the right around the stamp */
+/* her arrangement, set by hand in /sheets-lab on 2026-10-13 and locked in */
 const SHEETS = [
-  { x: 0.035, y: 0.19, r: 0.115 }, { x: 0.16, y: 0.35, r: 0.12 }, { x: 0.11, y: 0.64, r: 0.072 },
-  { x: 0.075, y: 0.83, r: 0.115 }, { x: 0.02, y: 0.5, r: 0.09 }, { x: 0.13, y: 0.97, r: 0.07 },
-  { x: 0.78, y: 0.23, r: 0.078 }, { x: 0.92, y: 0.15, r: 0.097 }, { x: 0.94, y: 0.39, r: 0.085 },
-  { x: 0.795, y: 0.81, r: 0.1 }, { x: 0.94, y: 0.72, r: 0.078 }, { x: 0.95, y: 0.94, r: 0.074 },
+  { x: 0.052, y: 0.193, r: 0.115 }, { x: 0.843, y: 0.72, r: 0.12 }, { x: 0.066, y: 0.706, r: 0.072 },
+  { x: 0.179, y: 0.827, r: 0.115 }, { x: 0.02, y: 0.5, r: 0.09 }, { x: 0.044, y: 0.883, r: 0.07 },
+  { x: 0.823, y: 0.241, r: 0.078 }, { x: 0.941, y: 0.131, r: 0.097 }, { x: 0.929, y: 0.369, r: 0.085 },
+  { x: 0.914, y: 0.551, r: 0.1 }, { x: 0.199, y: 0.288, r: 0.078 }, { x: 0.948, y: 0.902, r: 0.074 },
 ];
 const SHEETS_NARROW = [
   { x: -0.08, y: 0.12, r: 0.16 }, { x: 1.08, y: 0.22, r: 0.15 }, { x: -0.06, y: 0.5, r: 0.14 },
