@@ -27,7 +27,7 @@ export default async function MembersPage() {
       {profile!.favorite_joke && (
         <section className="card mt-10 p-6">
           <p className="eyebrow">Your favorite</p>
-          <p className="riso-ink mt-2 text-lg">{profile!.favorite_joke}</p>
+          <p className="mt-2 text-lg">{profile!.favorite_joke}</p>
         </section>
       )}
 

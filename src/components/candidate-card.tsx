@@ -45,7 +45,7 @@ export function CandidateCard({ c, index = 0, canVote, highlight, showSetup }: {
       </header>
 
       {showSetup && <p className="t-sm text-[color:var(--ink-60)]">{c.generation.setup}</p>}
-      <p className="riso-ink font-jak text-[20px] font-semibold leading-[1.3] tracking-[-0.01em]">{c.punchline}</p>
+      <p className="font-jak text-[20px] font-semibold leading-[1.3] tracking-[-0.01em]">{c.punchline}</p>
 
       <footer className="mt-auto flex items-center justify-between gap-3 pt-2">
         <span className="t-sm flex min-w-0 items-center gap-2 text-[color:var(--ink-60)]">

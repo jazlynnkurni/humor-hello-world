@@ -72,7 +72,7 @@ export default async function RatePage({ searchParams }: { searchParams: Promise
       {leader && (
         <section className="mt-12">
           <p className="eyebrow">Leading today</p>
-          <p className="riso-ink mt-3 max-w-[720px] font-jak text-[25px] font-semibold leading-[1.3]">{leader.punchline}</p>
+          <p className="mt-3 max-w-[720px] font-jak text-[25px] font-semibold leading-[1.3]">{leader.punchline}</p>
         </section>
       )}
 

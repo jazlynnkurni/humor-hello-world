@@ -76,7 +76,7 @@ export function JokeCard({
         >
           <div className="overflow-hidden">
             <p
-              className="riso-ink text-[18px] leading-[1.4] transition-transform duration-500 ease-[cubic-bezier(.2,.7,.2,1)]"
+              className="text-[18px] leading-[1.4] transition-transform duration-500 ease-[cubic-bezier(.2,.7,.2,1)]"
               style={{ transform: isOpen ? "none" : "translateY(8px)" }}
             >
               {joke.punchline}
