@@ -78,8 +78,8 @@ export function SheetsLab() {
       <div className="pointer-events-none relative mx-auto flex min-h-screen max-w-7xl items-center px-6 py-24 md:px-16">
         <div className="grid w-full items-center gap-12 md:grid-cols-[1fr_auto] md:gap-16">
           <div className="flex max-w-[560px] flex-col items-start gap-6">
-            <h1 className="t-display">Columbia Jokes</h1>
-            <p className="t-lg text-[color:var(--ink-60)]">A new setup every day. Members ask the model for punchlines, everyone says lol, the best one wins the day.</p>
+            <h1 className="t-display">Columbia Laughs</h1>
+            <p className="t-lg text-[color:var(--ink-60)]">Who&apos;s Columbia&apos;s funniest student? Could it be you? Generate jokes or write your own. Whoever gets the most lols wins.</p>
             <div className="flex flex-wrap gap-3">
               <span className="btn btn-ink">Today&apos;s setup →</span>
               <span className="btn btn-paper">See the jokes</span>
