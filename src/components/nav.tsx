@@ -10,6 +10,8 @@ export async function Nav() {
     { href: "/jokes", label: "Jokes" },
     { href: "/write", label: "Write" },
     ...(user ? ([{ href: "/profile", label: "Profile" }] as NavItem[]) : [{ href: "/login", label: "Sign in" }]),
+    /* the admin area is its own app; only superadmins see the door */
+    ...(profile?.is_superadmin ? ([{ href: "https://humor-admin.vercel.app", label: "Admin", external: true }] as NavItem[]) : []),
   ];
 
   return (

@@ -10,6 +10,7 @@ export type Profile = {
   favorite_joke: string | null;
   bio: string | null;
   created_at: string | null;
+  is_superadmin?: boolean;
 };
 
 /** What Google told us at sign-in, so the setup step can start from it. */
@@ -41,7 +42,7 @@ export const getUserAndProfile = cache(async (): Promise<{ user: Viewer | null; 
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, email, first_name, last_name, avatar_url, favorite_joke, bio, created_at")
+    .select("id, email, first_name, last_name, avatar_url, favorite_joke, bio, created_at, is_superadmin")
     .eq("id", user.id)
     .maybeSingle();
 

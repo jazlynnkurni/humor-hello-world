@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-export type NavItem = { href: string; label: string; quiet?: boolean; smHide?: boolean } | { signout: true };
+export type NavItem = { href: string; label: string; quiet?: boolean; smHide?: boolean; external?: boolean } | { signout: true };
 
 /**
  * Her nav pill: the mode icon at its head, then the links. A soft drop slides
@@ -74,9 +74,15 @@ export function NavPill({ items }: { items: NavItem[] }) {
             <button type="submit" className="quiet">Sign out</button>
           </form>
         ) : (
+          it.external ? (
+            <a key={it.href} href={it.href} className={it.quiet ? "quiet" : undefined}>
+              {it.label}
+            </a>
+          ) : (
           <Link key={it.href} href={it.href} prefetch={true} className={[it.quiet ? "quiet" : "", it.smHide ? "sm-hide" : ""].join(" ").trim() || undefined} aria-current={path === it.href ? "page" : undefined}>
             {it.label}
           </Link>
+          )
         ),
       )}
     </span>
