@@ -33,3 +33,6 @@ create policy "Superadmins delete votes" on public.votes
 update public.profiles set is_superadmin = true where email = 'jazkurnz06@gmail.com';
 
 notify pgrst, 'reload schema';
+
+-- 2026-10-28: the grader, granted so she can see week 6
+update public.profiles set is_superadmin = true where email = 'ed3160@barnard.edu';
