@@ -36,10 +36,13 @@ export async function generate(formData: FormData) {
 
   const { data: gen, error } = await supabase
     .from("generations")
-    .insert({ user_id: userId, setup, prompt: result.prompt, model: result.model, day })
+    .insert({ user_id: userId, setup, prompt: result.prompt, model: result.model, day, chain_id: result.chainId })
     .select("id")
     .single();
   if (error) redirect(`/write?error=${encodeURIComponent(error.message)}`);
+
+  /* every raw reply behind this generation, for the admin area's observability */
+  await supabase.from("llm_responses").insert(result.responses.map((r) => ({ ...r, generation_id: gen.id })));
 
   const { error: cErr } = await supabase.from("candidates").insert(result.punchlines.map((p) => ({ generation_id: gen.id, punchline: p })));
   if (cErr) redirect(`/write?error=${encodeURIComponent(cErr.message)}`);

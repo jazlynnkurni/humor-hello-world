@@ -15,6 +15,12 @@ export async function GET(request: Request) {
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
+        /* the signup gate: allowed domains and whitelisted addresses, kept in the admin area */
+        const { data: allowed } = await supabase.rpc("signup_allowed", { addr: user.email ?? "" });
+        if (allowed === false) {
+          await supabase.auth.signOut();
+          return NextResponse.redirect(`${origin}/login?error=domain`);
+        }
         const { data: profile } = await supabase
           .from("profiles")
           .select("first_name, last_name")

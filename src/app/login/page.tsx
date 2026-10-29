@@ -17,7 +17,11 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <p className="mt-3 text-[color:var(--ink-60)]">
           Members get the jokes that didn&apos;t make the public list. The green disc is you. Drag it into the other one.
         </p>
-        {error && <p className="t-sm mt-3 text-oxblood">That sign-in didn&apos;t finish. Try once more.</p>}
+        {error === "domain" ? (
+          <p className="t-sm mt-3 text-oxblood">That email isn&apos;t on the list. Columbia Laughs is for Columbia and Barnard addresses right now.</p>
+        ) : error ? (
+          <p className="t-sm mt-3 text-oxblood">That sign-in didn&apos;t finish. Try once more.</p>
+        ) : null}
       </div>
     </main>
   );
