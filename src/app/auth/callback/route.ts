@@ -29,9 +29,15 @@ export async function GET(request: Request) {
         const complete = Boolean(
           profile?.first_name?.trim() && profile?.last_name?.trim(),
         );
-        return NextResponse.redirect(
-          `${origin}${complete ? "/members" : "/onboarding"}`,
+        /* a lol that sent them here: go back to that page */
+        const raw = request.headers.get("cookie")?.match(/(?:^|;\s*)cl_next=([^;]+)/)?.[1];
+        const next = raw ? decodeURIComponent(raw) : null;
+        const back = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
+        const res = NextResponse.redirect(
+          `${origin}${!complete ? "/onboarding" : back ?? "/members"}`,
         );
+        if (raw) res.cookies.set("cl_next", "", { path: "/", maxAge: 0 });
+        return res;
       }
     }
   }

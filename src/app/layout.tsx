@@ -16,7 +16,7 @@ const jakarta = localFont({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Columbia Jokes", template: "%s · Columbia Jokes" },
+  title: { default: "Columbia Laughs", template: "%s · Columbia Laughs" },
   description: "The jokes that never made it past Sidechat, printed on paper.",
 };
 

@@ -50,6 +50,11 @@ export function VennLogin() {
     setBusy(true);
     setError(null);
     const supabase = createClient();
+    /* where to land after sign-in rides in a short cookie, so the redirect URI stays exact */
+    const next = new URLSearchParams(window.location.search).get("next");
+    if (next && next.startsWith("/") && !next.startsWith("//")) {
+      document.cookie = `cl_next=${encodeURIComponent(next)}; path=/; max-age=600; samesite=lax`;
+    }
     // Redirect URI is exactly /auth/callback, no extra query params.
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import type { Joke } from "@/lib/jokes";
 import { toggleLaugh } from "@/app/actions";
@@ -24,6 +25,7 @@ export function JokeCard({
   const [open, setOpen] = useState(Boolean(forcedOpen));
   const [laughed, setLaughed] = useState(joke.laughed);
   const [count, setCount] = useState(joke.laughs);
+  const path = usePathname();
   const [pending, start] = useTransition();
   const ref = useRef<HTMLElement>(null);
 
@@ -125,7 +127,7 @@ export function JokeCard({
             <span className="tabular-nums text-[color:var(--ink-60)]">{count}</span>
           </button>
         ) : (
-          <Link href="/login" className="btn btn-paper h-9 min-h-0 gap-2 px-3 text-[14px]">
+          <Link href={`/login?next=${encodeURIComponent(path)}`} aria-label={`Sign in to lol, ${count} so far`} title="Sign in to lol" className="btn btn-paper h-9 min-h-0 gap-2 px-3 text-[14px]">
             <span className="h-3 w-3 rounded-full" style={{ background: "var(--ink-12)" }} />
             lol?
             <span className="tabular-nums text-[color:var(--ink-60)]">{count}</span>

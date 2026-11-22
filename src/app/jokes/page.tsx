@@ -16,9 +16,9 @@ export default async function JokesPage({ searchParams }: { searchParams: Promis
       <Link href="/" className="t-sm text-[color:var(--ink-60)] hover:text-oxblood">
         ← Home
       </Link>
-      <h1 className="t-h1 mt-4">Columbia Jokes</h1>
+      <h1 className="t-h1 mt-4">Jokes</h1>
       <p className="t-sm mt-2 text-[color:var(--ink-60)]">
-        {jokes.length} joke{jokes.length === 1 ? "" : "s"} loaded from Supabase, sorted by rating. Written from real r/columbia threads
+        {jokes.length} joke{jokes.length === 1 ? "" : "s"}, most lols first. Written from real r/columbia threads
         {jokes.some((j) => j.author_id) ? ", plus members' own." : "."}
       </p>
 

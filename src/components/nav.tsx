@@ -18,7 +18,7 @@ export async function Nav() {
     <nav className="nav">
       <div className="in mx-auto max-w-7xl px-6 md:px-16">
         <Link href="/" className="mark">
-          <span className="word">Columbia Jokes</span>
+          <span className="word">Columbia Laughs</span>
         </Link>
         <NavPill items={items} />
       </div>

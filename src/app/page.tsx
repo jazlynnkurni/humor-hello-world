@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { HeroSheets } from "@/components/riso/HeroSheets";
 import { Stamp } from "@/components/stamp/Stamp";
 
@@ -24,6 +25,9 @@ export default async function Home() {
             <p className="t-lg enter text-[color:var(--ink-60)]" style={{ "--i": 1 } as React.CSSProperties}>
               Who&apos;s Columbia&apos;s funniest student? Could it be you? Generate jokes or write your own. Whoever gets the most lols wins.
             </p>
+            <Link href="/write" className="btn btn-ink enter" style={{ "--i": 2 } as React.CSSProperties}>
+              Get punchlines
+            </Link>
           </div>
 
           {/* the stamp, right */}

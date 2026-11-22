@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import type { Candidate } from "@/lib/rate";
 import { vote } from "@/app/write/rate-actions";
@@ -10,6 +11,7 @@ import { vote } from "@/app/write/rate-actions";
 export function CandidateCard({ c, index = 0, canVote, highlight, showSetup }: { c: Candidate; index?: number; canVote: boolean; highlight?: boolean; showSetup?: boolean }) {
   const [lol, setLol] = useState(c.mine === 1);
   const [count, setCount] = useState(c.up);
+  const path = usePathname();
   const [pending, start] = useTransition();
   const ref = useRef<HTMLElement>(null);
 
@@ -67,7 +69,7 @@ export function CandidateCard({ c, index = 0, canVote, highlight, showSetup }: {
             <span className="tabular-nums text-[color:var(--ink-60)]">{count}</span>
           </button>
         ) : (
-          <Link href="/login" className="btn btn-paper h-9 min-h-0 gap-2 px-3 text-[14px]">
+          <Link href={`/login?next=${encodeURIComponent(path)}`} aria-label={`Sign in to lol, ${count} so far`} title="Sign in to lol" className="btn btn-paper h-9 min-h-0 gap-2 px-3 text-[14px]">
             <span className="h-3 w-3 rounded-full" style={{ background: "var(--ink-12)" }} />
             lol?
             <span className="tabular-nums text-[color:var(--ink-60)]">{count}</span>

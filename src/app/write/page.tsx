@@ -44,6 +44,8 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
     user ? fetchMine(user.id) : Promise.resolve([]),
   ]);
   const leader = view === "today" ? cands.find((c) => c.score > 0) : undefined;
+  /* an empty day still has something to read and rate: the all-time best */
+  const fallback = view === "today" && cands.length === 0 ? await fetchCandidates("best", day) : [];
 
   return (
     <main className="mx-auto max-w-7xl px-6 pb-8 pt-32 md:px-16">
@@ -52,7 +54,7 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
         <div className="max-w-[640px]">
           <p className="eyebrow">Today&apos;s setup</p>
           <h1 className="t-h1 mt-3">{setup}</h1>
-          <p className="mt-4 font-jak text-[16px] font-semibold">Laughs @ Columbia</p>
+          <p className="mt-4 font-jak text-[16px] font-semibold">Columbia Laughs</p>
           <p className="t-sm mt-2 max-w-[560px] text-[color:var(--ink-60)]">
             What are Columbia students laughing about this week? Get punchlines inspired by our Sidechat and Reddit, or be Columbia&apos;s next comedian: write your own joke and share it with everyone. Have fun lol-ing.
           </p>
@@ -96,7 +98,16 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
         </section>
       )}
 
-      {cands.length === 0 ? (
+      {cands.length === 0 && fallback.length > 0 ? (
+        <section className="mt-12">
+          <p className="text-[color:var(--ink-60)]">No punchlines on today&apos;s setup yet. Here are the all-time best.</p>
+          <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {fallback.map((c, i) => (
+              <CandidateCard key={c.id} c={c} index={i} canVote={member} showSetup />
+            ))}
+          </div>
+        </section>
+      ) : cands.length === 0 ? (
         <div className="card mt-12 flex flex-col items-start gap-3 p-8">
           <h2 className="t-h3">Nothing to lol at yet.</h2>
           <p className="text-[color:var(--ink-60)]">{view === "today" ? "Be the first to ask for three punchlines on today's setup." : "Nothing has been generated yet."}</p>

@@ -4,10 +4,12 @@ import { getUserAndProfile, profileIsComplete } from "@/lib/profile";
 
 export const metadata = { title: "Sign in" };
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; next?: string }> }) {
+  const { error, next } = await searchParams;
+  /* only paths on this site, never another origin */
+  const back = next && next.startsWith("/") && !next.startsWith("//") ? next : null;
   const { user, profile } = await getUserAndProfile();
-  if (user) redirect(profileIsComplete(profile) ? "/members" : "/onboarding");
-  const { error } = await searchParams;
+  if (user) redirect(!profileIsComplete(profile) ? "/onboarding" : back ?? "/members");
 
   return (
     <main className="relative isolate min-h-screen overflow-hidden">
@@ -17,6 +19,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <p className="mt-3 text-[color:var(--ink-60)]">
           Members get the jokes that didn&apos;t make the public list. The green disc is you. Drag it into the other one.
         </p>
+        {back && !error && (
+          <p className="t-sm mt-3 text-oxblood">Sign in to lol. You&apos;ll land back where you were.</p>
+        )}
         {error === "domain" ? (
           <p className="t-sm mt-3 text-oxblood">That email isn&apos;t on the list. Columbia Laughs is for Columbia and Barnard addresses right now.</p>
         ) : error ? (
